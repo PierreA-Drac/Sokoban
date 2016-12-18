@@ -1,0 +1,10 @@
+# Fichier de configuration CTAGS
+tags
+
+# Fichiers binaires
+sokoban
+obj/*
+.fuse*
+
+# Fichiers temporaires
+*.swp

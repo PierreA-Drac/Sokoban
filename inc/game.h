@@ -10,10 +10,8 @@
 #ifndef __GAME_H
 #define __GAME_H
 
-#include <string.h>
 #include "structs.h"
 #include "consts.h"
-#include "game.h"
 #include "sokoban.h"
 #include "display.h"
 

@@ -9,7 +9,6 @@
 #ifndef __DISPLAY_H
 #define __DISPLAY_H
 
-#include <uvsqgraphics.h>
 #include "structs.h"
 #include "consts.h"
 

@@ -39,7 +39,7 @@ $(OBJ_PATH)%.o : $(SRC_PATH)%.c $(INC_PATH)%.h $(INC_PATH)consts.h $(INC_PATH)st
 	$(info Compilation de $< :)
 	$(CC) -c $< -o $@ $(CFLAGS)
 
-$(OBJ_PATH)sokoban.o : $(INC_PATH)game.h $(INC_PATH)display.h $(INC_PATH)editor.h 
+$(OBJ_PATH)sokoban.o : $(INC_PATH)game.h $(INC_PATH)display.h $(INC_PATH)editor.h $(INC_PATH)action.h
 $(OBJ_PATH)game.o    : $(INC_PATH)sokoban.h $(INC_PATH)display.h
 
 ##	  Nettoyage	  ##
@@ -48,6 +48,7 @@ clean :
 	$(info Suppression de $(EXEC) et de $(OBJ) :)
 	rm -f $(EXEC)
 	rm -f $(OBJ)
+	rm -f .fuse_hidden*
 
 ##	  Debugger	  ##
 

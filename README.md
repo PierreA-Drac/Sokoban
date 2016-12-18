@@ -11,10 +11,10 @@ Le projet est actuellement *en cours de développement*.
 
 ### Remarques
 
-Fonctions d'affichages des boutons et des informatiions à améliorer.
+Fonctions d'affichages des boutons et des informations à améliorer.
 
 Gestion des coordonnées et des tailles des éléments archaïques à revoir (nombres codés en dur, constantes (define), variable dans les structures).
 
 ### Questions
 
-Faut-il mettre le minimum d'include possible (un include inclus tout les autres include nécéssaire), ou faut-il mettre chaque include dont le fichier aurait besoint même si cela est superflue ?
+Faut-il mettre le minimum d'include possible (un include inclus tout les autres include nécéssaire), ou faut-il mettre chaque include dont le fichier aurait besoint même si cela est superflu ?

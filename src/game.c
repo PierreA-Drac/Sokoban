@@ -69,6 +69,7 @@ SOKOBAN initOtherLevel_Game(char** argv) {
 
 SOKOBAN initSokoban_Game(SOKOBAN S) {
 	S.lev.win = FALSE;
+	S.lev.quit = FALSE;
 	S.lev.infos.nbHit = 0;
 	S = initLevel(S);
 	S = initButtons(S);
@@ -271,9 +272,13 @@ LEVEL editSokoban_Game(LEVEL L, ACTION A) {
 	if (A.type <= CHARAC_RIGHT && A.type >= CHARAC_TOP) {
 		L = handlingMovement(L, A);
 	}	
-	else if (A.type == NEXT || A.type == PREV)
-		L.win = TRUE;
-		
+	else if (A.type >= INIT && A.type <= NEXT) {
+		if (A.type == NEXT)
+			L = nextLevel(L);
+		else if (A.type == PREV)
+			L = prevLevel(L);
+		L.quit = TRUE;
+	}
 	return L;
 }
 
@@ -281,16 +286,16 @@ LEVEL editSokoban_Game(LEVEL L, ACTION A) {
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
  */
 
-SOKOBAN nextLevel(SOKOBAN S) {
-	S.lev.infos.numLevel++;
-	return S;
+LEVEL nextLevel(LEVEL L) {
+	L.infos.numLevel++;
+	return L;
 }
 
 /**
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
  */
 
-SOKOBAN prevLevel(SOKOBAN S) {
-	S.lev.infos.numLevel--;
-	return S;
+LEVEL prevLevel(LEVEL L) {
+	L.infos.numLevel--;
+	return L;
 }

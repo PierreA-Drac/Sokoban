@@ -83,7 +83,8 @@ typedef struct level_case {
  * 			 pour le  trouver).
  * int h, w 	       : Nombre de ligne (h : hauteur) et nombre de 
  * 			 colonne (w : largeur) du niveau.
- * int win 	       : Constante booléenne indiquant si le niveau est gagné.
+ * int win, quit       : Constantes booléennes indiquant si le niveau est gagné,
+ * 			 et si on doit le quitter.
  * LEVEL_INFOS infos   : Contient les informations relative au niveau.
  */
 
@@ -91,7 +92,7 @@ typedef struct level {
 	CASE** map;
 	POINT charac;
 	int h, w;
-	int win;
+	int win, quit;
 	LEVEL_INFOS infos;
 } LEVEL;
 

@@ -176,6 +176,14 @@ POINT findCharac(CASE** map, int w, int h);
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
  */
 
+/** editSokoban_Game
+ * -----------------------------------------------------------------------------
+ * Modifie le niveau L en fontion de l'action A dans le cadre d'une partie de
+ * jeu.
+ * -----------------------------------------------------------------------------
+ * Renvoie le niveau L modifié et prêt à être traité.
+ */
+
 LEVEL editSokoban_Game(LEVEL L, ACTION A);
 
 /**
@@ -184,11 +192,12 @@ LEVEL editSokoban_Game(LEVEL L, ACTION A);
 
 /** nextLevel
  * -----------------------------------------------------------------------------
- * Renvoie un Sokoban S prêt à être ré-initialisé au niveau suivant.
+ * Permet de faire passer le niveau au niveau suivant.
  * -----------------------------------------------------------------------------
+ * Renvoie un LEVEL L prêt à être ré-initialisé au niveau suivant.
  */
 
-SOKOBAN nextLevel(SOKOBAN S);
+LEVEL nextLevel(LEVEL L);
 
 /**
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -196,10 +205,11 @@ SOKOBAN nextLevel(SOKOBAN S);
 
 /** prevLevel
  * -----------------------------------------------------------------------------
- * Renvoie un Sokoban S prêt à être ré-initialisé au niveau précédent.
+ * Permet de faire passer le niveau au niveau précédent.
  * -----------------------------------------------------------------------------
+ * Renvoie un LEVEL L prêt à être ré-initialisé au niveau précédent.
  */
 
-SOKOBAN prevLevel(SOKOBAN S);
+LEVEL prevLevel(LEVEL L);
 
 #endif

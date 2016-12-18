@@ -141,16 +141,15 @@ int main (int argc, char** argv) {
 		S = initSokoban_Game(S);
 		initDisplay(S);
 
-		while (S.lev.win != TRUE && A.type != QUIT) {
+		/* Gestion du niveau */
+		while (S.lev.win != TRUE && S.lev.quit != TRUE) {
 			displaySokoban(S);
 			A = waitAction(S.but, S.But_H_Pix, S.But_W_Pix);
 			S.lev = editSokoban_Game(S.lev, A);
 		}
 
-		if (A.type == PREV)
-			S = prevLevel(S);
-		else
-			S = nextLevel(S);
+		if (S.lev.win == TRUE)
+			S.lev = nextLevel(S.lev);
 		quitDisplay();
 	}
 

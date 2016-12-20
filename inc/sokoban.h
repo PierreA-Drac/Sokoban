@@ -17,11 +17,10 @@
 #include "game.h"
 #include "display.h"
 #include "editor.h"
+#include "historic.h"
 
 /**
- * ####  -----------------------------------------------------------------  ####
- * ##	  Fonctions =====================================================     ##
- * ####  -----------------------------------------------------------------  ####
+ * # Gestion des arguments ....................................................:
  */
 
 /** checkArgs
@@ -35,7 +34,7 @@
 SOKOBAN checkArgs(int argc, char** argv);
 
 /**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ * # Contrôles ................................................................:
  */
 
 /** whatIsCaseType
@@ -49,6 +48,19 @@ CASE_TYPE whatIsCaseType(char c);
 
 /**
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+/** isResolvable
+ * -----------------------------------------------------------------------------
+ * Vérifie si le niveau L est correct et résoluble.
+ * -----------------------------------------------------------------------------
+ * Retourne TRUE si le niveau est correct, FALSE s'il ne l'est pas.
+ */
+
+int isResolvable(LEVEL L);
+
+/**
+ * # Gestion de la mémoire ....................................................:
  */
 
 /** mallocMap
@@ -73,18 +85,5 @@ CASE** mallocMap(int w, int h);
  */
 
 CASE** freeMap(CASE** map, int w, int h);
-
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
-
-/** isResolvable
- * -----------------------------------------------------------------------------
- * Vérifie si le niveau L est correct et résoluble.
- * -----------------------------------------------------------------------------
- * Retourne TRUE si le niveau est correct, FALSE s'il ne l'est pas.
- */
-
-int isResolvable(LEVEL L);
 
 #endif

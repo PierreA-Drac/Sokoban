@@ -14,17 +14,10 @@
 #include "consts.h"
 #include "sokoban.h"
 #include "display.h"
+#include "historic.h"
 
 /**
- * ####  -----------------------------------------------------------------  ####
- * ##	  Fonctions =====================================================     ##
- * ####  -----------------------------------------------------------------  ####
- */
- 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- * Initialisation du Sokoban : -------------------------------------------------
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ * # Initialisation du Sokoban ................................................:
  */
 
 /** initFirstLevel_Game 
@@ -169,9 +162,7 @@ void calcPosMap(CASE** map, int w, int h);
 POINT findCharac(CASE** map, int w, int h);
 
 /**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- * Édition du Sokoban : --------------------------------------------------------
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ * # Édition du Sokoban .......................................................:
  */
 
 /** editSokoban_Game
@@ -209,5 +200,19 @@ LEVEL nextLevel(LEVEL L);
  */
 
 LEVEL prevLevel(LEVEL L);
+
+/**
+ * # Contrôle .................................................................:
+ */
+
+/** isWin
+ * -----------------------------------------------------------------------------
+ * Permet de savoir si le niveau L est gagné ou pas. S'il l'est, affiche un
+ * message et met en pause le programme pour 3 secondes.
+ * -----------------------------------------------------------------------------
+ * Renvoie TRUE si le niveau est gagné, FALSE s'il ne l'est pas.
+ */
+
+int isWin(LEVEL L);
 
 #endif

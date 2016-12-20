@@ -3,16 +3,14 @@
  * # Prénom .......: Pierre
  * # N° étudiant ..: 21501002
  *
- * Ce fichier contient les fonctions qui gère la récupération des différentes
- * actions du jeu.
+ * Ce fichier contient les fonctions qui gère la récupération et les
+ * applications des différentes actions du jeu.
  */
 
 #include "../inc/action.h"
 
 /**
- * ####  -----------------------------------------------------------------  ####
- * ##	  Fonctions =====================================================     ##
- * ####  -----------------------------------------------------------------  ####
+ * # Détermination de l'action ................................................:
  */
 
 ACTION waitAction(BUTTON B[], int ButtonHeight, int ButtonWidth) {
@@ -20,7 +18,7 @@ ACTION waitAction(BUTTON B[], int ButtonHeight, int ButtonWidth) {
 	int type, arrow;
 	char key;
 	type = wait_key_arrow_clic_v2(&key, &arrow, &A.p);
-	if (type == EST_FLECHE)
+	if 	(type == EST_FLECHE)
 		A = getArrowAction(arrow);
 	else if (type == EST_TOUCHE)
 		A = getKeyAction(key);
@@ -39,7 +37,7 @@ ACTION waitAction(BUTTON B[], int ButtonHeight, int ButtonWidth) {
 
 ACTION getArrowAction(int arrow) {
 	ACTION A;
-	if (arrow == FLECHE_GAUCHE)
+	if 	(arrow == FLECHE_GAUCHE)
 		A.type = CHARAC_LEFT;
 	else if (arrow == FLECHE_DROITE)
 		A.type = CHARAC_RIGHT;
@@ -47,7 +45,7 @@ ACTION getArrowAction(int arrow) {
 		A.type = CHARAC_TOP;
 	else if (arrow == FLECHE_BAS)
 		A.type = CHARAC_BOTTOM;
-	A.p.x = -1; A.p.y = -1;
+	A.p.x = -1; 	A.p.y = -1;
 	return A;
 }
 
@@ -57,7 +55,7 @@ ACTION getArrowAction(int arrow) {
 
 ACTION getKeyAction(char key) {
 	ACTION A;
-	if (key == 'u' || key == 'U')
+	if 	(key == 'u' || key == 'U')
 		A.type = UNDO;
 	else if (key == 'r' || key == 'R')
 		A.type = REDO;
@@ -73,7 +71,7 @@ ACTION getKeyAction(char key) {
 		A.type = SAVE;
 	else if (key == 'a' || key == 'A')
 		A.type = ALEA;
-	A.p.x = -1; A.p.y = -1;
+	A.p.x = -1; 	A.p.y = -1;
 	return A;
 }
 
@@ -83,13 +81,11 @@ ACTION getKeyAction(char key) {
 
 ACTION getMouseAction(ACTION A, BUTTON B[], int ButtonHeight, int ButtonWidth) {
 	/* Si c'est un bouton */
-	if (A.p.y > (HEIGHT - ButtonHeight)) {
+	if (A.p.y > (HEIGHT - ButtonHeight))
 		A.type = B[A.p.x / (ButtonWidth/NB_BUTTON)].A;
-	}
 	/* Si c'est une case */
-	else {
+	else
 		A.type = CHANGE_CASE;	/* Action active que pour l'éditeur */
-	}
 	return A;
 }
 
@@ -139,11 +135,16 @@ int wait_key_arrow_clic_v2(char *touche, int *fleche, POINT *P) {
 }
 
 /**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ * # Modification par l'action ................................................:
+ */
+
+/**
+ * ## Déplacement du personnage par action de l'utilisateur ...................:
  */
 
 LEVEL handlingMovement(LEVEL L, ACTION A) {
 	POINT characBackup = L.charac;
+	HISTOELEM* E;
 	CASE *src = &L.map[L.charac.y][L.charac.x];
 	CASE *dest = NULL, *dest_box = NULL;
 	/* src      : pointeur sur la case d'où vient le personnage */
@@ -151,8 +152,8 @@ LEVEL handlingMovement(LEVEL L, ACTION A) {
 	/* dest_box : pointeur sur la case après celle où va le personnage pour
 	 * gérer le cas des caisses */
 
-	/* Initialisation des ponteurs sur les cases à traitées */
-	L.charac = getEditCases(A, L, &dest, &dest_box);
+	/* Initialisation des pointeurs sur les cases à traitées */
+	L.charac = getEditCases(A.type, L, &dest, &dest_box);
 
 	/* Test si le personnage peut se déplacer */
 	if (isCollision(dest, dest_box)) {
@@ -160,8 +161,17 @@ LEVEL handlingMovement(LEVEL L, ACTION A) {
 		return L;
 	}
 
-	/* Déplacement du personnage */
-	moveCharac(src, dest, dest_box);
+	/* Déplacement du personnage et MAJ de la pile Undo */
+	E = createHistoElem();
+	E->A = A.type;
+	E->ptr2 = moveCharac(src, dest, dest_box);
+	if (E->ptr2)
+		E->ptr1 = dest;
+	else
+		E->ptr1 = NULL;
+	L.H.histoUndo = pushHistoElem(L.H.histoUndo, E);
+	/* Vide la pile du Redo */
+	L.H.histoRedo = freeStack(L.H.histoRedo);
 
 	L.infos.nbHit++;
 	return L;
@@ -171,24 +181,24 @@ LEVEL handlingMovement(LEVEL L, ACTION A) {
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
  */
 
-POINT getEditCases(ACTION A, LEVEL L, CASE** dest, CASE** dest_box) {
-	if 	(A.type == CHARAC_TOP)    {
-		*dest  = &L.map[L.charac.y-1][L.charac.x];
+POINT getEditCases(ACTION_TYPE A, LEVEL L, CASE** dest, CASE** dest_box) {
+	if 	(A == CHARAC_TOP)    {
+		*dest  	  = &L.map[L.charac.y-1][L.charac.x];
 		*dest_box = &L.map[L.charac.y-2][L.charac.x];
 		L.charac.y--;
 	}
-	else if (A.type == CHARAC_BOTTOM) {
-		*dest  = &L.map[L.charac.y+1][L.charac.x];
+	else if (A == CHARAC_BOTTOM) {
+		*dest     = &L.map[L.charac.y+1][L.charac.x];
 		*dest_box = &L.map[L.charac.y+2][L.charac.x];
 		L.charac.y++;
 	}
-	else if (A.type == CHARAC_LEFT)   {
-		*dest  = &L.map[L.charac.y][L.charac.x-1];
+	else if (A == CHARAC_LEFT)   {
+		*dest     = &L.map[L.charac.y][L.charac.x-1];
 		*dest_box = &L.map[L.charac.y][L.charac.x-2];
 		L.charac.x--;
 	}
-	else if (A.type == CHARAC_RIGHT)  {
-		*dest  = &L.map[L.charac.y][L.charac.x+1];
+	else if (A == CHARAC_RIGHT)  {
+		*dest  	  = &L.map[L.charac.y][L.charac.x+1];
 		*dest_box = &L.map[L.charac.y][L.charac.x+2];
 		L.charac.x++;
 	}
@@ -207,8 +217,8 @@ int isCollision(CASE* dest, CASE* dest_box) {
 	/* Si le personnage rencontre une caisse coincée par un mur ou une 
 	 * autre caisse */
 	else if (dest->type == BOX || dest->type == BOX_ON_STORAGE) {
-		if (dest_box->type == WALL || dest_box->type == BOX
-		    || dest_box->type == BOX_ON_STORAGE) {
+		if (dest_box->type == WALL || dest_box->type == BOX ||
+		    dest_box->type == BOX_ON_STORAGE) {
 			return TRUE;
 		}
 	}
@@ -219,15 +229,15 @@ int isCollision(CASE* dest, CASE* dest_box) {
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
  */
 
-void moveCharac(CASE* src, CASE* dest, CASE* dest_box) {
+CASE* moveCharac(CASE* src, CASE* dest, CASE* dest_box) {
 	/* Gère la case du personnage */
-	if (src->type == CHARAC)
+	if 	(src->type == CHARAC)
 		src->type = EMPTY;
 	else if (src->type == CHARAC_ON_STORAGE)
 		src->type = BOX_STORAGE;
 
 	/* Gère la case de destination du personnage */
-	if (dest->type == EMPTY)
+	if 	(dest->type == EMPTY)
 		dest->type = CHARAC;
 	else if (dest->type == BOX_STORAGE)
 		dest->type = CHARAC_ON_STORAGE;
@@ -235,14 +245,118 @@ void moveCharac(CASE* src, CASE* dest, CASE* dest_box) {
 	/* Gère le cas où le personnage pousse une caisse */
 	else if (dest->type == BOX || dest->type == BOX_ON_STORAGE) {
 		/* Case de destination du personnage */
-		if (dest->type == BOX)
+		if 	(dest->type == BOX)
 			dest->type = CHARAC;
 		else if (dest->type == BOX_ON_STORAGE)
 			dest->type = CHARAC_ON_STORAGE;
 		/* Case de destination de la caisse */
-		if (dest_box->type == EMPTY)
+		if 	(dest_box->type == EMPTY)
 			dest_box->type = BOX;
 		else if (dest_box->type == BOX_STORAGE)
 			dest_box->type = BOX_ON_STORAGE;
+		return dest_box;
 	}
+	return NULL;
+}
+
+/**
+ * ## Déplacement du personnage par Undo ......................................:
+ */
+
+LEVEL undo(LEVEL L) {
+	/* Si histoUndo vide, rien à faire */
+	if (!L.H.histoUndo.head)
+		return L;
+
+	HISTOELEM* E = createHistoElem();
+	L.H.histoUndo = popHistoElem(L.H.histoUndo, E);
+	CASE* src_charac = NULL;
+	CASE* dest_charac = NULL;
+
+	/* Initialisation des pointeurs pour traité le déplacement du personnage */
+ 	L.charac = undo_getEditCases(E->A, L, &src_charac, &dest_charac);
+
+	/* Déplacement du personnage et éventuellement d'une caisse */
+	undo_moveCharac(E, src_charac, dest_charac);
+
+	/* MAJ du nombre de coups & de la pile du Redo */
+	L.infos.nbHit--;
+	L.H.histoRedo = pushHistoElem(L.H.histoRedo, E);
+
+	return L;
+}
+
+/**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+POINT undo_getEditCases(ACTION_TYPE A, LEVEL L, CASE** src, CASE** dest) {
+	*src = &L.map[L.charac.y][L.charac.x];
+	if 	(A == CHARAC_TOP)
+		L.charac.y++;
+	else if (A == CHARAC_BOTTOM)
+		L.charac.y--;
+	else if (A == CHARAC_LEFT)
+		L.charac.x++;
+	else if (A == CHARAC_RIGHT)
+		L.charac.x--;
+	*dest = &L.map[L.charac.y][L.charac.x];
+	return L.charac;
+ }
+
+/**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+void undo_moveCharac(HISTOELEM* E, CASE* src, CASE* dest) {
+	/* Gère la source du personnage */
+	if 	(src->type == CHARAC)
+		src->type = EMPTY;
+	else if (src->type == CHARAC_ON_STORAGE)
+		src->type = BOX_STORAGE;
+
+	/* Gère la destination du personnage */
+	if 	(dest->type == EMPTY)
+		dest->type = CHARAC;
+	else if (dest->type == BOX_STORAGE)
+		dest->type = CHARAC_ON_STORAGE;
+
+	/* Gère le déplacement de la caisse */
+	if (E->ptr1 && E->ptr2) {
+		if 	(E->ptr1->type == EMPTY)
+			E->ptr1->type = BOX;
+		else if (E->ptr1->type == BOX_STORAGE)
+			E->ptr1->type = BOX_ON_STORAGE;
+		if 	(E->ptr2->type == BOX)
+			E->ptr2->type = EMPTY;
+		else if (E->ptr2->type == BOX_ON_STORAGE)
+			E->ptr2->type = BOX_STORAGE;
+	}
+}
+
+/**
+ * ## Déplacement du personnage par Redo ......................................:
+ */
+
+LEVEL redo(LEVEL L) {
+	/* Si histoRedo vide, rien à faire */
+	if (!L.H.histoRedo.head)
+		return L;
+
+	HISTOELEM* E = createHistoElem();
+	L.H.histoRedo = popHistoElem(L.H.histoRedo, E);
+	CASE *src = &L.map[L.charac.y][L.charac.x];
+	CASE *dest = NULL, *dest_box = NULL;
+
+	/* Initialisation des pointeurs sur les cases à traitées */
+	L.charac = getEditCases(E->A, L, &dest, &dest_box);
+
+	/* Déplacement du personnage et MAJ de la pile Undo */
+	moveCharac(src, dest, dest_box);
+
+	/* MAJ du nombre de coups & de la pile du Undo */
+	L.infos.nbHit++;
+	L.H.histoUndo = pushHistoElem(L.H.histoUndo, E);
+
+	return L;
 }

@@ -10,15 +10,7 @@
 #include "../inc/game.h"
 
 /**
- * ####  -----------------------------------------------------------------  ####
- * ##	  Fonctions =====================================================     ##
- * ####  -----------------------------------------------------------------  ####
- */
-
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- * Initialisation du Sokoban : -------------------------------------------------
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ * # Initialisation du Sokoban ................................................:
  */
 
 SOKOBAN initFirstLevel_Game(char** argv) {
@@ -71,6 +63,7 @@ SOKOBAN initSokoban_Game(SOKOBAN S) {
 	S.lev.win = FALSE;
 	S.lev.quit = FALSE;
 	S.lev.infos.nbHit = 0;
+	S.lev.H = createHisto();
 	S = initLevel(S);
 	S = initButtons(S);
 	if (!isResolvable(S.lev)) {
@@ -252,8 +245,8 @@ POINT findCharac(CASE** map, int w, int h) {
 	charac.x = -1; charac.y = -1;
 	for (j=0; j<h; j++) {
 		for (i=0; i<w; i++) {
-			if (map[j][i].type == CHARAC
-			    || map[j][i].type == CHARAC_ON_STORAGE) {
+			if (map[j][i].type == CHARAC ||
+			    map[j][i].type == CHARAC_ON_STORAGE) {
 				charac.x = i;
 				charac.y = j;
 			}
@@ -263,15 +256,12 @@ POINT findCharac(CASE** map, int w, int h) {
 }
 
 /**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- * Édition du Sokoban : --------------------------------------------------------
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ * # Édition du Sokoban .......................................................:
  */
 
 LEVEL editSokoban_Game(LEVEL L, ACTION A) {
-	if (A.type <= CHARAC_RIGHT && A.type >= CHARAC_TOP) {
+	if (A.type <= CHARAC_RIGHT && A.type >= CHARAC_TOP)
 		L = handlingMovement(L, A);
-	}	
 	else if (A.type >= INIT && A.type <= NEXT) {
 		if (A.type == NEXT)
 			L = nextLevel(L);
@@ -279,6 +269,10 @@ LEVEL editSokoban_Game(LEVEL L, ACTION A) {
 			L = prevLevel(L);
 		L.quit = TRUE;
 	}
+	else if (A.type == UNDO)
+		L = undo(L);
+	else if (A.type == REDO)
+		L = redo(L);
 	return L;
 }
 
@@ -298,4 +292,36 @@ LEVEL nextLevel(LEVEL L) {
 LEVEL prevLevel(LEVEL L) {
 	L.infos.numLevel--;
 	return L;
+}
+
+/**
+ * # Contrôle .................................................................:
+ */
+
+int isWin(LEVEL L) {
+	int i, j;
+	int nbBox = 0;
+	for (j=0; j<L.h; j++) {
+		for (i=0; i<L.w; i++) {
+			if (L.map[j][i].type == BOX)
+				nbBox++;
+		}
+	}
+	if (nbBox == 0) {
+		POINT p;
+		char *text =  "Le niveau est terminer !";
+		int size = 20;
+		p.x = WIDTH/2 - largeur_texte(text, size)/2;
+		while (p.x < 0) {
+			size--;
+			p.x = WIDTH/2 - largeur_texte(text, size)/2;
+		}
+		p.y = hauteur_texte(text, size);
+		aff_pol(text, size, p, tan);
+		affiche_all();
+		sleep(3);
+		return TRUE;
+	}
+	else
+		return FALSE;
 }

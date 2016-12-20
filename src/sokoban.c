@@ -11,14 +11,16 @@
 #include "../inc/sokoban.h"
 
 /**
- * ####  -----------------------------------------------------------------  ####
- * ##	  Fonctions =====================================================     ##
- * ####  -----------------------------------------------------------------  ####
+ * # Fonctions ................................................................:
+ */
+
+/**
+ * ## Gestion des arguments ...................................................:
  */
 
 SOKOBAN checkArgs(int argc, char** argv) {
 	SOKOBAN S;
-	if (argc == 2) {
+	if 	(argc == 2) {
 		S = initFirstLevel_Game(argv);
 	}
 	else if (argc == 3) {
@@ -37,7 +39,7 @@ SOKOBAN checkArgs(int argc, char** argv) {
 }
 
 /**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ * ## Contrôles ...............................................................:
  */
 
 CASE_TYPE whatIsCaseType(char c) {
@@ -61,6 +63,33 @@ CASE_TYPE whatIsCaseType(char c) {
 
 /**
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+int isResolvable(LEVEL L) {
+	int i, j;
+	int nbBox = 0, nbBoxStorage = 0, nbCharac = 0;
+	for (j=0; j<L.h; j++) {
+		for (i=0; i<L.w; i++) {
+			if ((L.map[j][i].type == BOX) || 
+			    (L.map[j][i].type == BOX_ON_STORAGE))
+				nbBox++;
+			if ((L.map[j][i].type == BOX_STORAGE) ||
+			    (L.map[j][i].type == CHARAC_ON_STORAGE) ||
+			    (L.map[j][i].type == BOX_ON_STORAGE))
+				nbBoxStorage++;
+			if ((L.map[j][i].type == CHARAC) ||
+			    (L.map[j][i].type == CHARAC_ON_STORAGE))
+				nbCharac++;
+		}
+	}
+	if ((nbBox != nbBoxStorage) || (nbCharac != 1) || (nbBox == 0))
+		return FALSE;
+	else
+		return TRUE;
+}
+
+/**
+ * ## Gestion de la mémoire ...................................................:
  */
 
 CASE** mallocMap(int w, int h) {
@@ -95,36 +124,7 @@ CASE** freeMap(CASE** map, int w, int h) {
 }
 
 /**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
-
-int isResolvable(LEVEL L) {
-	int i, j;
-	int nbBox = 0, nbBoxStorage = 0, nbCharac = 0;
-	for (j=0; j<L.h; j++) {
-		for (i=0; i<L.w; i++) {
-			if ((L.map[j][i].type == BOX) || 
-			    (L.map[j][i].type == BOX_ON_STORAGE))
-				nbBox++;
-			if ((L.map[j][i].type == BOX_STORAGE) ||
-			    (L.map[j][i].type == CHARAC_ON_STORAGE) ||
-			    (L.map[j][i].type == BOX_ON_STORAGE))
-				nbBoxStorage++;
-			if ((L.map[j][i].type == CHARAC) ||
-			    (L.map[j][i].type == CHARAC_ON_STORAGE))
-				nbCharac++;
-		}
-	}
-	if ((nbBox != nbBoxStorage) || (nbCharac != 1))
-		return FALSE;
-	else
-		return TRUE;
-}
-
-/**
- * ####  -----------------------------------------------------------------  ####
- * ##	  MAIN ==========================================================     ##
- * ####  -----------------------------------------------------------------  ####
+ * # MAIN .....................................................................:
  */
 
 int main (int argc, char** argv) {
@@ -146,6 +146,7 @@ int main (int argc, char** argv) {
 			displaySokoban(S);
 			A = waitAction(S.but, S.But_H_Pix, S.But_W_Pix);
 			S.lev = editSokoban_Game(S.lev, A);
+			S.lev.win = isWin(S.lev);
 		}
 
 		if (S.lev.win == TRUE)
@@ -167,6 +168,8 @@ int main (int argc, char** argv) {
 	}
 
         /* End */
-	freeMap(S.lev.map, S.lev.w, S.lev.h);
+	S.lev.map = freeMap(S.lev.map, S.lev.w, S.lev.h);
+	S.lev.H.histoUndo = freeStack(S.lev.H.histoUndo);
+	S.lev.H.histoRedo = freeStack(S.lev.H.histoRedo);
         return 0;
 }

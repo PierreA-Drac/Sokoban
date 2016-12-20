@@ -14,13 +14,7 @@
 #include "consts.h"
 
 /**
- * ####  -----------------------------------------------------------------  ####
- * ##	  Fonctions =====================================================     ##
- * ####  -----------------------------------------------------------------  ####
- */
-
-/**
- * # Création et initialisation : ==============================================
+ * # Création et initialisation ...............................................:
  */
 
 /** createHisto
@@ -46,7 +40,7 @@ HISTORIC createHisto();
 HISTOELEM* createHistoElem();
 
 /**
- * # Ajout et retrait d'élément : ==============================================
+ * # Ajout et retrait d'élément ...............................................:
  */
 
 /** pushHistoElem
@@ -73,7 +67,7 @@ STACK pushHistoElem(STACK S, HISTOELEM* E);
 STACK popHistoElem(STACK S, HISTOELEM* E);
 
 /**
- * # Libération de la mémoire : ================================================
+ * # Libération de la mémoire .................................................:
  */
 
 /** freeStack

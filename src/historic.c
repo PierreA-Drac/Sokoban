@@ -10,13 +10,7 @@
 #include "../inc/historic.h"
 
 /**
- * ####  -----------------------------------------------------------------  ####
- * ##	  Fonctions =====================================================     ##
- * ####  -----------------------------------------------------------------  ####
- */
-
-/**
- * # Création et initialisation : ==============================================
+ * # Création et initialisation ...............................................:
  */
 
 HISTORIC createHisto() {
@@ -35,7 +29,7 @@ HISTOELEM* createHistoElem() {
 	E = malloc(sizeof(HISTOELEM));
 	if (!E) {
 		fprintf(stderr, "Memory allocation error for histoElem\n");
-		return NULL;
+		exit(EXIT_FAILURE);
 	}
 	E->suiv = NULL;
 	E->ptr1 = NULL;
@@ -45,7 +39,7 @@ HISTOELEM* createHistoElem() {
 }
 
 /**
- * # Ajout et retrait d'élément : ==============================================
+ * # Ajout et retrait d'élément ...............................................:
  */
 
 STACK pushHistoElem(STACK S, HISTOELEM* E) {
@@ -66,8 +60,13 @@ STACK popHistoElem(STACK S, HISTOELEM* E) {
 	HISTOELEM* toFree;
 	/* Guard */
 	if (!S.head) {
-		fprintf(stderr, "Impossible to pull an element from an"
+		fprintf(stderr, "Impossible to pull an element from an "
 				"empty stack\n");
+		return S;
+	}
+	if (!E) {
+		fprintf(stderr, "Impossible to pull an element to an "
+				"unallocated element\n");
 		return S;
 	}
 	/* Copie du premier élément */
@@ -82,7 +81,7 @@ STACK popHistoElem(STACK S, HISTOELEM* E) {
 }
 
 /**
- * # Libération de la mémoire : ================================================
+ * # Libération de la mémoire .................................................:
  */
 
 STACK freeStack(STACK S) {

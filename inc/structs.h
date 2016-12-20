@@ -13,12 +13,18 @@
 #include "consts.h"
 
 /**
- * ####  -----------------------------------------------------------------  ####
- * ##	  Structures ====================================================     ##
- * ####  -----------------------------------------------------------------  ####
+ * # Déclarations nécéssaires .................................................:
  */
 
-/* # Structure action : ===================================================== */
+typedef struct level_case CASE;
+
+/**
+ * # Structures ...............................................................:
+ */
+
+/**
+ * ## Structure action ........................................................:
+ */
 
 /** ACTION
  * -----------------------------------------------------------------------------
@@ -33,7 +39,63 @@ typedef struct action {
 	ACTION_TYPE type;
 } ACTION;
 
-/* # Structures pour former un niveau : ===================================== */
+/**
+ * ## Structures de l'historique ..............................................:
+ */
+
+/** HISTOELEM
+ * -----------------------------------------------------------------------------
+ * Structure d'un élément de l'historique. Il s'agit d'un élément d'une liste
+ * chaînée avec des informations propre à l'historique.
+ * -----------------------------------------------------------------------------
+ * ACTION_TYPE A	  : Type d'action effectué sur cet élément de
+ *			    l'historique.
+ * CASE *ptr1, *ptr2	  : Deux pointeurs vers des cases à traitées (hormis
+ * 			    la case du personnage).
+ * struct histoElem* suiv : Pointeur vers l'élément suivant.
+ */
+
+typedef struct histoElem {
+	ACTION_TYPE A;
+	CASE *ptr1, *ptr2;
+	struct histoElem* suiv;
+} HISTOELEM;
+
+/**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+/** STACK
+ * -----------------------------------------------------------------------------
+ * Structure d'une pile.
+ * -----------------------------------------------------------------------------
+ * struct histoElem* head : Pointeur sur le premier élément de la pile.
+ */
+
+typedef struct stack {
+	struct histoElem* head;
+} STACK;
+
+/**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+/** HISTORIC
+ * -----------------------------------------------------------------------------
+ * Structure d'un historique utilisé pour un niveau.
+ * -----------------------------------------------------------------------------
+ * STACK histoUndo : Pile où il faut piocher pour faire un Undo.
+ * STACK histoRedo : Pile où il faut piocher pour faire un Redo.
+ */
+
+typedef struct historic {
+	STACK histoUndo;
+	STACK histoRedo;
+} HISTORIC;
+
+/**
+ * ## Structures pour former un niveau ........................................:
+ */
 
 /** LEVEL_INFOS
  * -----------------------------------------------------------------------------
@@ -86,6 +148,7 @@ typedef struct level_case {
  * int win, quit       : Constantes booléennes indiquant si le niveau est gagné,
  * 			 et si on doit le quitter.
  * LEVEL_INFOS infos   : Contient les informations relative au niveau.
+ * HISTORIC H	       : Historique du niveau.
  */
 
 typedef struct level {
@@ -94,9 +157,12 @@ typedef struct level {
 	int h, w;
 	int win, quit;
 	LEVEL_INFOS infos;
+	HISTORIC H;
 } LEVEL;
 
-/* # Structure boutons : ===================================================== */
+/**
+ * ## Structure boutons .......................................................:
+ */
 
 /** BUTTON
  * -----------------------------------------------------------------------------
@@ -113,7 +179,9 @@ typedef struct button {
 	char* name;
 } BUTTON;
 
-/* # Structure d'une fenêtre Sokoban : ====================================== */
+/**
+ * ## Structure d'une fenêtre Sokoban .........................................:
+ */
 
 /** SOKOBAN
  * -----------------------------------------------------------------------------
@@ -139,57 +207,5 @@ typedef struct sokoban {
 	int Lev_H_Pix, Lev_W_Pix;
 	float But_H_Pix, But_W_Pix;
 } SOKOBAN;
-
-/* # Structures de l'historique : =========================================== */
-
-/** HISTOELEM
- * -----------------------------------------------------------------------------
- * Structure d'un élément de l'historique. Il s'agit d'un élément d'une liste
- * chaînée avec des informations propre à l'historique.
- * -----------------------------------------------------------------------------
- * ACTION_TYPE A	  : Type d'action effectué sur cet élément de
- *			    l'historique.
- * CASE *ptr1, *ptr2	  : Deux pointeurs vers des cases à traitées (hormis
- * 			    la case du personnage).
- * struct histoElem* suiv : Pointeur vers l'élément suivant.
- */
-
-typedef struct histoElem {
-	ACTION_TYPE A;
-	CASE *ptr1, *ptr2;
-	struct histoElem* suiv;
-} HISTOELEM;
-
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
-
-/** STACK
- * -----------------------------------------------------------------------------
- * Structure d'une pile.
- * -----------------------------------------------------------------------------
- * struct histoElem* head : Pointeur sur le premier élément de la pile.
- */
-
-typedef struct stack {
-	struct histoElem* head;
-} STACK;
-
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
-
-/** HISTORIC
- * -----------------------------------------------------------------------------
- * Structure d'un historique utilisé pour un niveau.
- * -----------------------------------------------------------------------------
- * STACK histoUndo : Pile où il faut piocher pour faire un Undo.
- * STACK histoRedo : Pile où il faut piocher pour faire un Redo.
- */
-
-typedef struct historic {
-	STACK histoUndo;
-	STACK histoRedo;
-} HISTORIC;
 
 #endif

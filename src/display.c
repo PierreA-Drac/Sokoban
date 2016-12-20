@@ -9,9 +9,7 @@
 #include "../inc/display.h"
 
 /**
- * ####  -----------------------------------------------------------------  ####
- * ##	  Fonctions =====================================================     ##
- * ####  -----------------------------------------------------------------  ####
+ * # Initialisation de l'affichage ............................................:
  */
 
 void initDisplay(SOKOBAN S) {
@@ -26,7 +24,6 @@ void initDisplay(SOKOBAN S) {
  */
 
 SOKOBAN initButtons(SOKOBAN S) {
-	/* A faire plus tard : bouttons en mode EDITOR */
 	int i;
 	S.But_H_Pix = ((S.Lev_H_Pix * H_BUT_RATIO) + 
 		      (S.Lev_W_Pix * (H_BUT_RATIO/2))) / 2;
@@ -55,7 +52,6 @@ SOKOBAN initButtons(SOKOBAN S) {
  */
 
 BUTTON initSpecificButton(BUTTON B, int i, MODE M) {
-	/* A faire plus tard : bouttons en mode EDITOR */
 	switch (i) {
 		case 0 :
 			B.name = "Undo"; 	B.A = UNDO;
@@ -80,7 +76,7 @@ BUTTON initSpecificButton(BUTTON B, int i, MODE M) {
 }
 
 /**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ * # Affichage ................................................................:
  */
 
 void displaySokoban(SOKOBAN S) {
@@ -163,7 +159,7 @@ void displayLevel(LEVEL L) {
  */
 
 void displayInfosLevel(LEVEL L, int h_but) {
-	/* Fonction très moche et mal organisé */
+	/* Fonction très moche, et mal organisé */
 	POINT Ptmp1, Ptmp2;
 	char filename[BUFFER_SIZE], numlevel[BUFFER_SIZE], nbhit[BUFFER_SIZE];
 	/* Initialisation des chaînes de caractères à afficher */
@@ -190,7 +186,7 @@ void displayInfosLevel(LEVEL L, int h_but) {
 }
 
 /**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ * # Fermeture de l'affichage .................................................:
  */
 
 void quitDisplay() {

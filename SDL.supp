@@ -23,7 +23,7 @@
 }
 
 {
-	Another_leak_unidentified
+	another_leak_unidentified
 		Memcheck:Leak
 		...
 		fun:*_dl_*

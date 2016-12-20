@@ -149,16 +149,31 @@ typedef struct sokoban {
  * -----------------------------------------------------------------------------
  * ACTION_TYPE A	  : Type d'action effectué sur cet élément de
  *			    l'historique.
- * CASE* ptr1, ptr2	  : Deux pointeurs vers des cases à traitées (hormis
- * 			    la case du personnage)
+ * CASE *ptr1, *ptr2	  : Deux pointeurs vers des cases à traitées (hormis
+ * 			    la case du personnage).
  * struct histoElem* suiv : Pointeur vers l'élément suivant.
  */
 
 typedef struct histoElem {
 	ACTION_TYPE A;
-	CASE* ptr1, ptr2;
+	CASE *ptr1, *ptr2;
 	struct histoElem* suiv;
 } HISTOELEM;
+
+/**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+/** STACK
+ * -----------------------------------------------------------------------------
+ * Structure d'une pile.
+ * -----------------------------------------------------------------------------
+ * struct histoElem* head : Pointeur sur le premier élément de la pile.
+ */
+
+typedef struct stack {
+	struct histoElem* head;
+} STACK;
 
 /**
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -168,14 +183,13 @@ typedef struct histoElem {
  * -----------------------------------------------------------------------------
  * Structure d'un historique utilisé pour un niveau.
  * -----------------------------------------------------------------------------
- * struct histoElem* histoUndo : Pointeur vers le premier élément de l'historique
- * 			  	 où il faut piocher pour faire un Undo.
- * struct histoElem* histoRedo : Même chose avec Redo.
+ * STACK histoUndo : Pile où il faut piocher pour faire un Undo.
+ * STACK histoRedo : Pile où il faut piocher pour faire un Redo.
  */
 
 typedef struct historic {
-	struct histoElem* histoUndo;
-	struct histoElem* histoRedo;
+	STACK histoUndo;
+	STACK histoRedo;
 } HISTORIC;
 
 #endif

@@ -1,0 +1,31 @@
+{
+	SDL_leak_ignore
+		Memcheck:Leak
+		...
+		fun:SDL_*
+		...
+}
+
+{
+	SDL_TTF_leak_ignore
+		Memcheck:Leak
+		...
+		fun:TTF_*
+		...
+}
+
+{
+	libX11_leak_ignore
+		Memcheck:Leak
+		...
+		obj:*libX11*
+		...
+}
+
+{
+	Another_leak_unidentified
+		Memcheck:Leak
+		...
+		fun:*_dl_*
+		...
+}

@@ -58,4 +58,4 @@ gdb : compil
 
 valgrind : compil
 	$(info Debbugage avec $@ :)
-	valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-reachable=yes --track-origins=yes ./$(EXEC) $(ARGS)
+	valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-possibly-lost=yes --show-reachable=yes --track-origins=yes --suppressions=./SDL.supp ./$(EXEC) $(ARGS)

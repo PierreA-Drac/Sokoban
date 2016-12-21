@@ -7,22 +7,18 @@
 Ce dépôt contient le projet de programmation **Mario Sokoban**.  
 Le projet est actuellement *en cours de développement*.
 
----
-
-Fonctionnalitées restantes à programmer :
+**Fonctionnalitées restantes** à programmer :
 * Éditeur de niveau
 * Écriture des niveaux crée dans un fichier
 * Vérification de la fermeture des murs d'un niveau
 
 ### Fonctionnalitées :
 
-Deux modes pour le programme :  
+Deux **modes** pour le programme :  
 1. Mode jeu  
 2. Mode éditeur
 
----
-
-Fonctionnalitées :
+**Fonctionnalitées** :
 * Lecture depuis la ligne de commande
 * Lecture des niveaux depuis un fichier
 * Vérification de la résolubilité d'un niveau
@@ -36,9 +32,7 @@ Fonctionnalitées :
 * Possibilité de parcours les niveaux en avant ou en arrière
 * Possibilité de réinitialiser un niveau
 
----
-
-Utilisation :
+**Utilisation** :
 * ./sokoban filein.xsb
 	* Lance le Sokoban en mode jeu, en lisant le premier niveau contenu dans le fichier filein.xsb.
 * ./sokoban -n 8 filein.xsb
@@ -57,6 +51,6 @@ Utilisation :
 
 ### Questions :
 
-1. Mettre le minimum d'include possible (un include inclus tout les autres include nécéssaire) vs. Mettre chaque include dont le fichier aurait besoin même si cela est superflu ?
+1. Mettre le minimum d'include possible (un include inclus tout les autres include nécéssaire) ou mettre chaque include dont le fichier aurait besoin même si cela est superflu ?
 2. Bonne méthode pour afficher des éléments et des textes proportionnellement à la taille de la fenêtre ?
-3. Tabulation vs Espaces ?
+3. Tabulation ou espaces ?

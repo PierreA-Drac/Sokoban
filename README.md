@@ -6,7 +6,9 @@
 
 Ce dépôt contient le projet de programmation **Mario Sokoban**.  
 Le projet est actuellement *en cours de développement*.
+
 ---
+
 Fonctionnalitées restantes à programmer :
 * Éditeur de niveau
 * Écriture des niveaux crée dans un fichier
@@ -17,7 +19,9 @@ Fonctionnalitées restantes à programmer :
 Deux modes pour le programme :  
 1. Mode jeu  
 2. Mode éditeur
+
 ---
+
 Fonctionnalitées :
 * Lecture depuis la ligne de commande
 * Lecture des niveaux depuis un fichier
@@ -31,7 +35,9 @@ Fonctionnalitées :
 * Historique pour aller en avant ou en arrière dans notre partie
 * Possibilité de parcours les niveaux en avant ou en arrière
 * Possibilité de réinitialiser un niveau
+
 ---
+
 Utilisation :
 * ./sokoban filein.xsb
 	* Lance le Sokoban en mode jeu, en lisant le premier niveau contenu dans le fichier filein.xsb.

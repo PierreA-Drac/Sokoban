@@ -34,7 +34,7 @@
 SOKOBAN checkArgs(int argc, char** argv);
 
 /**
- * # Contrôles ................................................................:
+ * ## Contrôles et tests  .....................................................:
  */
 
 /** whatIsCaseType
@@ -58,6 +58,49 @@ CASE_TYPE whatIsCaseType(char c);
  */
 
 int isResolvable(LEVEL L);
+
+/**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+/** isClose
+ * -----------------------------------------------------------------------------
+ * Parcours récursivement toutes les cases où le personnage peut se déplacer
+ * à partir de sa position pour savoir si le niveau L est fermer ou non.
+ * -----------------------------------------------------------------------------
+ * Renvoie TRUE si le niveau L est fermer, FALSE s'il ne l'est pas.
+ */
+
+int isClose(LEVEL L, POINT P);
+
+/**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+/** initChecking
+ * -----------------------------------------------------------------------------
+ * Initialise les variables du niveau L vérifiant qu'une case à été testée
+ * à FALSE.
+ * -----------------------------------------------------------------------------
+ * Renvoie le niveau L prêt à être testé.
+ */
+
+LEVEL initChecking(LEVEL L);
+
+/**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+/** findCharac
+ * -----------------------------------------------------------------------------
+ * Cherche la case dans la map de largeur w et de hauteur h qui contient le
+ * personnage.
+ * -----------------------------------------------------------------------------
+ * Renvoie un point comportant les indices en largeur et en hauteur de la case 
+ * qui contient le personnage.
+ */
+
+POINT findCharac(CASE** map, int w, int h);
 
 /**
  * # Gestion de la mémoire ....................................................:

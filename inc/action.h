@@ -21,12 +21,12 @@
 /** waitAction
  * -----------------------------------------------------------------------------
  * Récupère un clic ou une touche du clavier, et organise le traitement de
- * l'action.
+ * l'action en fonction du mode.
  * -----------------------------------------------------------------------------
  * Renvoie une action prête à être traitée.
  */
 
-ACTION waitAction(BUTTON B[], int ButtonHeight, int ButtonWidth);
+ACTION waitAction(BUTTON B[], int ButtonHeight, int ButtonWidth, MODE M);
 
 /**
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -53,7 +53,7 @@ ACTION getArrowAction(int arrow);
  * Renvoie une action correspondant à la touche du clavier.
  */
 
-ACTION getKeyAction(char key);
+ACTION getKeyAction(char key, MODE M);
 
 /**
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -63,13 +63,14 @@ ACTION getKeyAction(char key);
  * -----------------------------------------------------------------------------
  * Récupère le point cliqué A.p, les bouttons B ainsi que leurs hauteurs
  * ButtonHeight et leur largeurs ButtonWidth pour initaliser l'action
- * en fonction.
+ * en fonction du mode.
  * -----------------------------------------------------------------------------
  * Renvoie une action correspondant à un bouton cliqué ou à une case du niveau
  * à changer d'état (pour l'éditeur seulement).
  */
 
-ACTION getMouseAction(ACTION A, BUTTON B[], int ButtonHeight, int ButtonWidth);
+ACTION getMouseAction(ACTION A, BUTTON B[], int ButtonHeight, 
+					    int ButtonWidth, MODE M);
 
 /**
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -213,5 +214,18 @@ void undo_moveCharac(HISTOELEM* E, CASE* src, CASE* dest);
  */
 
 LEVEL redo(LEVEL L);
+
+/**
+ * ## Ré-initialisation du niveau .............................................:
+ */
+
+/** reInitGame
+ * -----------------------------------------------------------------------------
+ * Ré-initilise le niveau sans réinitialiser l'historique.
+ * -----------------------------------------------------------------------------
+ * Renvoie le niveau L à la position initial.
+ */
+
+LEVEL reInitGame(LEVEL L);
 
 #endif

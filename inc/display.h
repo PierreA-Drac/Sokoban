@@ -86,11 +86,12 @@ void displaySokoban(SOKOBAN S);
 
 /** displayButtons
  * -----------------------------------------------------------------------------
- * Affiche le fond, les séparateurs et le noms des boutons du tableau B.
+ * Affiche le fond, les séparateurs et le noms des boutons du tableau B en
+ * fonction du mode M.
  * -----------------------------------------------------------------------------
  */
 
-void displayButtons(BUTTON B[], float W, float H);
+void displayButtons(BUTTON B[], float W, float H, MODE M);
 
 /**
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -115,6 +116,19 @@ void displayLevel(LEVEL L);
  */
 
 void displayInfosLevel(LEVEL L, int h_but);
+
+/**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+/** displayMessage
+ * -----------------------------------------------------------------------------
+ * Affiche la chaîne de caractère pointée par text en bas de l'écran, et attends
+ * 3 secondes.
+ * -----------------------------------------------------------------------------
+ */
+
+void displayMessage(char* text);
 
 /**
  * ## Fermeture de l'affichage ................................................:

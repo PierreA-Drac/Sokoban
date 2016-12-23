@@ -20,7 +20,7 @@
  * # Initialisation du Sokoban ................................................:
  */
 
-/** initFirstLevel_Game 
+/** preInitFirstLevel_Game 
  * -----------------------------------------------------------------------------
  * Vérifie si le fichier est un ".xsb". Si oui, initialise le Sokoban avec
  * avec les infos de la ligne de commande pointées par argv pour jouer le 
@@ -29,13 +29,13 @@
  * Renvoie un SOKOBAN S pré-initialisé.
  */
 
-SOKOBAN initFirstLevel_Game(char** argv);
+SOKOBAN preInitFirstLevel_Game(char** argv);
 
 /**
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
  */
 
-/** initOtherLevel_Game 
+/** preInitOtherLevel_Game 
  * -----------------------------------------------------------------------------
  * Vérifie si le fichier est un ".xsb". Si oui, initialise le Sokoban avec
  * avec les infos de la ligne de commande pointées par argv pour jouer le 
@@ -44,7 +44,7 @@ SOKOBAN initFirstLevel_Game(char** argv);
  * Renvoie un SOKOBAN S pré-initialisé.
  */
 
-SOKOBAN initOtherLevel_Game(char** argv);
+SOKOBAN preInitOtherLevel_Game(char** argv);
 
 /**
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -53,7 +53,8 @@ SOKOBAN initOtherLevel_Game(char** argv);
 /** initSokoban_Game 
  * -----------------------------------------------------------------------------
  * Initialise les informations de jeu encore non-initalisé, le niveau et 
- * les bouttons à afficher. Le niveau passe la vérification de solubilité.
+ * les bouttons à afficher. Le niveau passe la vérification de solubilité et
+ * la vérification qu'il soit fermé.
  * -----------------------------------------------------------------------------
  * Renvoie un SOKOBAN S initialisé, résoluble et prêt à être afficher.
  */
@@ -147,21 +148,6 @@ CASE** readMap(FILE* F, int w, int h);
 void calcPosMap(CASE** map, int w, int h);
 
 /**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
-
-/** findCharac
- * -----------------------------------------------------------------------------
- * Cherche la case dans la map de largeur w et de hauteur h qui contient le
- * personnage.
- * -----------------------------------------------------------------------------
- * Renvoie un point comportant les indices en largeur et en hauteur de la case 
- * qui contient le personnage.
- */
-
-POINT findCharac(CASE** map, int w, int h);
-
-/**
  * # Édition du Sokoban .......................................................:
  */
 
@@ -207,8 +193,7 @@ LEVEL prevLevel(LEVEL L);
 
 /** isWin
  * -----------------------------------------------------------------------------
- * Permet de savoir si le niveau L est gagné ou pas. S'il l'est, affiche un
- * message et met en pause le programme pour 3 secondes.
+ * Permet de savoir si le niveau L est gagné ou pas.
  * -----------------------------------------------------------------------------
  * Renvoie TRUE si le niveau est gagné, FALSE s'il ne l'est pas.
  */

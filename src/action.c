@@ -13,7 +13,7 @@
  * # Détermination de l'action ................................................:
  */
 
-ACTION waitAction(BUTTON B[], int ButtonHeight, int ButtonWidth) {
+ACTION waitAction(BUTTON B[], int ButtonHeight, int ButtonWidth, MODE M) {
 	ACTION A;
 	int type, arrow;
 	char key;
@@ -21,9 +21,9 @@ ACTION waitAction(BUTTON B[], int ButtonHeight, int ButtonWidth) {
 	if 	(type == EST_FLECHE)
 		A = getArrowAction(arrow);
 	else if (type == EST_TOUCHE)
-		A = getKeyAction(key);
+		A = getKeyAction(key, M);
 	else if (type == EST_CLIC)
-		A = getMouseAction(A, B, ButtonHeight, ButtonWidth);
+		A = getMouseAction(A, B, ButtonHeight, ButtonWidth, M);
 	else {
 		A.type = NONE;
 		A.p.x = -1; A.p.y = -1;
@@ -53,24 +53,40 @@ ACTION getArrowAction(int arrow) {
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
  */
 
-ACTION getKeyAction(char key) {
+ACTION getKeyAction(char key, MODE M) {
 	ACTION A;
-	if 	(key == 'u' || key == 'U')
-		A.type = UNDO;
-	else if (key == 'r' || key == 'R')
-		A.type = REDO;
-	else if (key == 'i' || key == 'I')
-		A.type = INIT;
-	else if (key == 'q' || key == 'Q')
+	if 	(key == 'q' || key == 'Q')
 		A.type = QUIT;
-	else if (key == 'p' || key == 'P')
-		A.type = PREV;
-	else if (key == 'n' || key == 'N')
-		A.type = NEXT;
-	else if (key == 's' || key == 'S')
-		A.type = SAVE;
-	else if (key == 'a' || key == 'A')
-		A.type = ALEA;
+	else if (M.m_type == PLAY) {
+		if 	(key == 'u' || key == 'U')
+			A.type = UNDO;
+		else if (key == 'r' || key == 'R')
+			A.type = REDO;
+		else if (key == 'i' || key == 'I')
+			A.type = INIT;
+		else if (key == 'p' || key == 'P')
+			A.type = PREV;
+		else if (key == 'n' || key == 'N')
+			A.type = NEXT;
+	}
+	else if (M.m_type == EDITOR && M.m_step == BUILDING) {
+		if (key == 'p' || key == 'P')
+			A.type = PLAY_BACK;
+	}
+	else if (M.m_type == EDITOR && M.m_step == PLAY_EDIT) {
+		if 	(key == 'u' || key == 'U')
+			A.type = UNDO;
+		else if (key == 'r' || key == 'R')
+			A.type = REDO;
+		else if (key == 'i' || key == 'I')
+			A.type = INIT;
+		else if (key == 'a' || key == 'A')
+			A.type = ALEA;
+		else if (key == 's' || key == 'S')
+			A.type = SAVE;
+	}
+	else
+		A.type = NONE;
 	A.p.x = -1; 	A.p.y = -1;
 	return A;
 }
@@ -79,13 +95,23 @@ ACTION getKeyAction(char key) {
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
  */
 
-ACTION getMouseAction(ACTION A, BUTTON B[], int ButtonHeight, int ButtonWidth) {
+ACTION getMouseAction(ACTION A, BUTTON B[], int ButtonHeight, 
+					    int ButtonWidth, MODE M) {
+	int NbButtons;
+	/* Différenciation mode jeu vs éditeur */
+	if (M.m_type == PLAY || (M.m_type == EDITOR && 
+				 M.m_step == PLAY_EDIT))
+		NbButtons = NB_BUTTON;
+	else
+		NbButtons = NB_BUTTON_EDITOR_BUILDING;
 	/* Si c'est un bouton */
 	if (A.p.y > (HEIGHT - ButtonHeight))
-		A.type = B[A.p.x / (ButtonWidth/NB_BUTTON)].A;
+		A.type = B[A.p.x / (ButtonWidth/NbButtons)].A;
 	/* Si c'est une case */
-	else
+	else if (M.m_type == EDITOR && M.m_step == BUILDING)
 		A.type = CHANGE_CASE;	/* Action active que pour l'éditeur */
+	else
+		A.type = NONE;
 	return A;
 }
 
@@ -358,5 +384,15 @@ LEVEL redo(LEVEL L) {
 	L.infos.nbHit++;
 	L.H.histoUndo = pushHistoElem(L.H.histoUndo, E);
 
+	return L;
+}
+
+/**
+ * ## Ré-initialisation du niveau .............................................:
+ */
+
+LEVEL reInitGame(LEVEL L) {
+	while (L.H.histoUndo.head)
+		L = undo(L);
 	return L;
 }

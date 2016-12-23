@@ -25,8 +25,10 @@
  * ## Boutons .................................................................:
  */
 
-/* Nombre de boutton */
+/* Nombre de boutons en mode jeu */
 #define NB_BUTTON 6
+/* Nombre de boutons en mode éditeur et à l'étape de construction du niveau */
+#define NB_BUTTON_EDITOR_BUILDING 2
 
 /* Ratio appliqué aux dimensions du niveau pour calculer la hauteur des 
  * boutons */
@@ -43,12 +45,17 @@
  * ## Affichage ...............................................................:
  */
 
-/* Taille d'une case (carré), peut prendre les valeurs 16 et 32 */
+/* Taille d'une case carré en pixel, peut prendre les valeurs 16 et 32 */
 #define CASE_SIZE 32
 /* N.B. : Les affichage sont très long en 16x16, surement car la SDL doit faire
  * beaucoup de traitements pour afficher de si petites images. Les niveaux ne
  * sont donc pas très jouable en 16x16, mais je laisse quand même la possibilité
  * d'essayer maintenant que cela est programmé. */
+
+/* Nombre de cases en hauteur et en largeur d'une map en cours de création
+ * dans le mode éditeur */
+#define HEIGHT_MAP_EDITOR 19
+#define WIDTH_MAP_EDITOR 30
 
 /* Nombre de séparateur verticaux */
 #define NB_SEPARATOR_V 2
@@ -74,6 +81,7 @@
  * SAVE, ALEA  : Sauvegarde le niveau, ou fait jouer
  * 	         l'ordinateur aléatoirement.
  * CHANGE_CASE : Modifie le type d'une case de coordonnées A.p dans l'éditeur.
+ * PLAY_BACK   : Passer du mode éditon à jouer à l'envers.
  * NONE        : Aucune action.
  */
 
@@ -84,6 +92,7 @@ typedef enum action_type {
 	PREV, NEXT,
 	SAVE, ALEA,
 	CHANGE_CASE,
+	PLAY_BACK,
 	NONE
 } ACTION_TYPE;
 
@@ -91,7 +100,7 @@ typedef enum action_type {
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
  */
 
-/** MODE
+/** MODE_TYPE
  * -----------------------------------------------------------------------------
  * Indique dans quel mode du programme on se trouve.
  * -----------------------------------------------------------------------------
@@ -99,9 +108,26 @@ typedef enum action_type {
  * EDITOR : Mode de création de niveau.
  */
 
-typedef enum mode {
+typedef enum mode_type {
 	PLAY, EDITOR
-} MODE;
+} MODE_TYPE;
+
+/**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+/** MODE_EDITOR_STEP
+ * -----------------------------------------------------------------------------
+ * Indique dans quellé étape du mode éditeur on se trouve.
+ * -----------------------------------------------------------------------------
+ * BUILDING   : Mode de création du niveau à la souris.
+ * PLAY_EDIT  : Mode où on joue à l'envers pour finaliser le placements des
+ * 		caisses et du personnage.
+ */
+
+typedef enum mode_editor_step {
+	BUILDING, PLAY_EDIT
+} MODE_EDITOR_STEP;
 
 /**
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =

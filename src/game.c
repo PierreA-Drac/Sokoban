@@ -13,10 +13,10 @@
  * # Initialisation du Sokoban ................................................:
  */
 
-SOKOBAN initFirstLevel_Game(char** argv) {
+SOKOBAN preInitFirstLevel_Game(char** argv) {
 	SOKOBAN S;
 	if (strstr(argv[1], ".xsb") != NULL) {
-		S.mode = PLAY;
+		S.mode.m_type = PLAY;
 		S.lev.infos.numLevel = 0;
 		S.lev.infos.filename = argv[1];
 		/* La validité du fichier sera vérifier plus tard. */
@@ -32,11 +32,11 @@ SOKOBAN initFirstLevel_Game(char** argv) {
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
  */
 
-SOKOBAN initOtherLevel_Game(char** argv) {
+SOKOBAN preInitOtherLevel_Game(char** argv) {
 	SOKOBAN S;
 	if (!strcmp(argv[1], "-n")) {
 		if (strstr(argv[3], ".xsb") != NULL) {
-			S.mode = PLAY;
+			S.mode.m_type = PLAY;
 			S.lev.infos.numLevel = atoi(argv[2]);
 			/* Le numéro du niveau sera vérifier plus tard. Si
 			   l'utilisateur rentre une chaîne de caractère,
@@ -66,9 +66,11 @@ SOKOBAN initSokoban_Game(SOKOBAN S) {
 	S.lev.H = createHisto();
 	S = initLevel(S);
 	S = initButtons(S);
-	if (!isResolvable(S.lev)) {
-		fprintf(stderr, "Error: Level n°%d is not resovable\n"
-			      , S.lev.infos.numLevel);
+	S.lev = initChecking(S.lev);
+	if (!isResolvable(S.lev) ||
+	    !isClose(S.lev, findCharac(S.lev.map, S.lev.w, S.lev.h))) {
+		fprintf(stderr, "Error: Level n°%d is not resovable "
+				"or incorrect\n", S.lev.infos.numLevel);
 		exit(EXIT_FAILURE);
 	}
 	return S;
@@ -236,33 +238,15 @@ void calcPosMap(CASE** map, int w, int h) {
 }
 
 /**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
-
-POINT findCharac(CASE** map, int w, int h) {
-	int i, j;
-	POINT charac;
-	charac.x = -1; charac.y = -1;
-	for (j=0; j<h; j++) {
-		for (i=0; i<w; i++) {
-			if (map[j][i].type == CHARAC ||
-			    map[j][i].type == CHARAC_ON_STORAGE) {
-				charac.x = i;
-				charac.y = j;
-			}
-		}
-	}
-	return charac;
-}
-
-/**
  * # Édition du Sokoban .......................................................:
  */
 
 LEVEL editSokoban_Game(LEVEL L, ACTION A) {
 	if (A.type <= CHARAC_RIGHT && A.type >= CHARAC_TOP)
 		L = handlingMovement(L, A);
-	else if (A.type >= INIT && A.type <= NEXT) {
+	else if (A.type == INIT)
+		L = reInitGame(L);
+	else if (A.type >= QUIT && A.type <= NEXT) {
 		if (A.type == NEXT)
 			L = nextLevel(L);
 		else if (A.type == PREV)
@@ -307,21 +291,8 @@ int isWin(LEVEL L) {
 				nbBox++;
 		}
 	}
-	if (nbBox == 0) {
-		POINT p;
-		char *text =  "Le niveau est terminer !";
-		int size = 20;
-		p.x = WIDTH/2 - largeur_texte(text, size)/2;
-		while (p.x < 0) {
-			size--;
-			p.x = WIDTH/2 - largeur_texte(text, size)/2;
-		}
-		p.y = hauteur_texte(text, size);
-		aff_pol(text, size, p, tan);
-		affiche_all();
-		sleep(3);
+	if (nbBox == 0)
 		return TRUE;
-	}
 	else
 		return FALSE;
 }

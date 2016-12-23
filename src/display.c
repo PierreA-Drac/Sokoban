@@ -13,9 +13,15 @@
  */
 
 void initDisplay(SOKOBAN S) {
+	char title[BUFFER_SIZE];
+	strcpy(title, "Pierre AYOUB - Mario Sokoban");
+	if (S.mode.m_type == PLAY)
+		strcat(title, " (Mode Jeu)");
+	else
+		strcat(title, " (Mode Éditeur)");
 	init_graphics(S.Lev_W_Pix, S.Lev_H_Pix + NB_BUT_H*S.But_H_Pix + 
 		      NB_SEPARATOR_V*H_SEPARATOR_V);
-	SDL_WM_SetCaption("Mario Sokoban - Pierre AYOUB", NULL);
+	SDL_WM_SetCaption(title, NULL);
 	affiche_auto_off();
 }
 
@@ -24,18 +30,25 @@ void initDisplay(SOKOBAN S) {
  */
 
 SOKOBAN initButtons(SOKOBAN S) {
-	int i;
+	int i, NbButtons;
+	/* Différenciation mode jeu vs éditeur */
+	if (S.mode.m_type == PLAY || (S.mode.m_type == EDITOR && 
+				      S.mode.m_step == PLAY_EDIT))
+		NbButtons = NB_BUTTON;
+	else
+		NbButtons = NB_BUTTON_EDITOR_BUILDING;
+	/* Hauteur et largeur pour la zone des boutons */
 	S.But_H_Pix = ((S.Lev_H_Pix * H_BUT_RATIO) + 
 		      (S.Lev_W_Pix * (H_BUT_RATIO/2))) / 2;
 	if (S.But_H_Pix > 40)
 		S.But_H_Pix = 40;
 	S.But_W_Pix = S.Lev_W_Pix;
-	for (i=0; i<NB_BUTTON; i++) {
+	for (i=0; i<NbButtons; i++) {
 		/* Calcul des coordonnées pour tout les bouttons */
-		S.but[i].tl.x = i*(S.But_W_Pix / NB_BUTTON);
+		S.but[i].tl.x = i*(S.But_W_Pix / NbButtons);
 		S.but[i].tl.y = S.Lev_H_Pix + NB_BUT_H*S.But_H_Pix + 
 				NB_SEPARATOR_V*H_SEPARATOR_V;
-		S.but[i].tr.x = S.but[i].tl.x + (S.But_W_Pix / NB_BUTTON);
+		S.but[i].tr.x = S.but[i].tl.x + (S.But_W_Pix / NbButtons);
 		S.but[i].tr.y = S.but[i].tl.y;
 		S.but[i].bl.x = S.but[i].tl.x;
 		S.but[i].bl.y = S.but[i].tl.y - S.But_H_Pix;
@@ -52,25 +65,61 @@ SOKOBAN initButtons(SOKOBAN S) {
  */
 
 BUTTON initSpecificButton(BUTTON B, int i, MODE M) {
-	switch (i) {
-		case 0 :
-			B.name = "Undo"; 	B.A = UNDO;
-			break;
-		case 1 :
-			B.name = "Redo";	B.A = REDO;
-			break;
-		case 2 :
-			B.name = "Prev";	B.A = PREV;
-			break;
-		case 3 :
-			B.name = "Next";	B.A = NEXT;
-			break;
-		case 4 :
-			B.name = "Init";	B.A = INIT;
-			break;
-		case 5 :
-			B.name = "Quit";	B.A = QUIT;
-			break;
+	if (M.m_type == PLAY) {
+		switch (i) {
+			case 0 :
+				B.name = "Undo"; 	B.A = UNDO;
+				break;
+			case 1 :
+				B.name = "Redo";	B.A = REDO;
+				break;
+			case 2 :
+				B.name = "Prev";	B.A = PREV;
+				break;
+			case 3 :
+				B.name = "Next";	B.A = NEXT;
+				break;
+			case 4 :
+				B.name = "Init";	B.A = INIT;
+				break;
+			case 5 :
+				B.name = "Quit";	B.A = QUIT;
+				break;
+		}
+	}
+	else if (M.m_type == EDITOR) {
+		if (M.m_step == BUILDING) {
+			switch (i) {
+				case 0 :
+					B.name = "Play Back";	B.A = PLAY_BACK;
+					break;
+				case 1 :
+					B.name = "Quit";	B.A = QUIT;
+					break;
+			}
+		}
+		else if (M.m_step == PLAY_EDIT) {
+			switch (i) {
+				case 0 :
+					B.name = "Undo";	B.A = UNDO;
+					break;
+				case 1 :
+					B.name = "Redo";	B.A = REDO;
+					break;
+				case 2 :
+					B.name = "Init";	B.A = INIT;
+					break;
+				case 3 :
+					B.name = "Alea";	B.A = ALEA;
+					break;
+				case 4 :
+					B.name = "Save";	B.A = SAVE;
+					break;
+				case 5 :
+					B.name = "Quit";	B.A = QUIT;
+					break;
+			}
+		}
 	}
 	return B;
 }
@@ -81,7 +130,7 @@ BUTTON initSpecificButton(BUTTON B, int i, MODE M) {
 
 void displaySokoban(SOKOBAN S) {
 	fill_screen(black);
-	displayButtons(S.but, S.But_W_Pix, S.But_H_Pix);
+	displayButtons(S.but, S.But_W_Pix, S.But_H_Pix, S.mode);
 	displayLevel(S.lev);
 	displayInfosLevel(S.lev, S.But_H_Pix);
 	affiche_all();
@@ -91,19 +140,25 @@ void displaySokoban(SOKOBAN S) {
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
  */
 
-void displayButtons(BUTTON B[], float W, float H) {
-	int i;
+void displayButtons(BUTTON B[], float W, float H, MODE M) {
+	int i, NbButtons;
 	POINT Ptmp1, Ptmp2;
-	for (i=0; i<NB_BUTTON; i++) {
+	/* Différenciation mode jeu vs éditeur */
+	if (M.m_type == PLAY || (M.m_type == EDITOR && 
+				 M.m_step == PLAY_EDIT))
+		NbButtons = NB_BUTTON;
+	else
+		NbButtons = NB_BUTTON_EDITOR_BUILDING;
+	for (i=0; i<NbButtons; i++) {
 		draw_fill_rectangle(B[i].tl, B[i].br, tan);
 	}
 	/* Deuxième boucle pour afficher les éléments par dessus */
-	for (i=0; i<NB_BUTTON; i++) {
+	for (i=0; i<NbButtons; i++) {
 		/* Séparateur vertical */
-		if (i < NB_BUTTON - 1)
+		if (i < NbButtons - 1)
 			draw_line(B[i].tr, B[i].br, dimgray);
 		/* Nom du boutton */
-		Ptmp1.x = B[i].tl.x + (W/NB_BUTTON)/2;
+		Ptmp1.x = B[i].tl.x + (W/NbButtons)/2;
 		Ptmp1.y = B[i].tl.y - H/2;
 		aff_pol_centre(B[i].name, WIDTH*W_BUT_TXT_RATIO*0.85
 		+ H*H_BUT_TXT_RATIO*0.85, Ptmp1, black);
@@ -183,6 +238,24 @@ void displayInfosLevel(LEVEL L, int h_but) {
 	Ptmp1.x = 0;     Ptmp1.y = L.map[0][0].tl.y + H_SEPARATOR_V-1;
 	Ptmp2.x = WIDTH; Ptmp2.y = Ptmp1.y - H_SEPARATOR_V+1;
 	draw_fill_rectangle(Ptmp1, Ptmp2, dimgray);
+}
+
+/**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+void displayMessage(char* text) {
+	POINT p;
+	int size = 20;
+	p.x = WIDTH/2 - largeur_texte(text, size)/2;
+	while (p.x < 0) {
+		size--;
+		p.x = WIDTH/2 - largeur_texte(text, size)/2;
+	}
+	p.y = hauteur_texte(text, size);
+	aff_pol(text, size, p, tan);
+	affiche_all();
+	sleep(3);
 }
 
 /**

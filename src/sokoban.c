@@ -21,13 +21,13 @@
 SOKOBAN checkArgs(int argc, char** argv) {
 	SOKOBAN S;
 	if 	(argc == 2) {
-		S = initFirstLevel_Game(argv);
+		S = preInitFirstLevel_Game(argv);
 	}
 	else if (argc == 3) {
-		S = initLevel_Editor(argv);
+		S = preInitLevel_Editor(argv);
 	}
 	else if (argc == 4) {
-		S = initOtherLevel_Game(argv);
+		S = preInitOtherLevel_Game(argv);
 	}
 	else {
 		fprintf(stderr, "Wrong usage : \n./sokoban file[in].xsb"
@@ -39,11 +39,11 @@ SOKOBAN checkArgs(int argc, char** argv) {
 }
 
 /**
- * ## Contrôles ...............................................................:
+ * ## Contrôles et tests  .....................................................:
  */
 
 CASE_TYPE whatIsCaseType(char c) {
-	if (c == '#')
+	if 	(c == '#')
 		return WALL;
 	else if (c == '$')
 		return BOX;
@@ -68,6 +68,7 @@ CASE_TYPE whatIsCaseType(char c) {
 int isResolvable(LEVEL L) {
 	int i, j;
 	int nbBox = 0, nbBoxStorage = 0, nbCharac = 0;
+	/* Vérification des éléments de la map */
 	for (j=0; j<L.h; j++) {
 		for (i=0; i<L.w; i++) {
 			if ((L.map[j][i].type == BOX) || 
@@ -86,6 +87,99 @@ int isResolvable(LEVEL L) {
 		return FALSE;
 	else
 		return TRUE;
+}
+
+/**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+int isClose(LEVEL L, POINT P) {
+	/* Initialisation des indices des cases adjacentes */
+	POINT P_bottom, P_top, P_right, P_left;
+	P_bottom.x = P.x;	P_bottom.y = P.y + 1;
+	P_top.x    = P.x;	P_top.y	   = P.y - 1;
+	P_right.x  = P.x + 1;	P_right.y  = P.y;
+	P_left.x   = P.x - 1;	P_left.y   = P.y;
+	/* Si on arrive sur un mur, on renvoie TRUE */
+	if (L.map[P.y][P.x].type == WALL)
+		return TRUE;
+	else {
+		/* Tant que l'on ne détecte pas le bord de l'écran,
+		 * res est à TRUE */
+		int res = TRUE;
+		/* On passe la case testée comme étant déjà checkée */
+		L.map[P.y][P.x].checked = TRUE;
+		/* Si l'on est supérieur à y=0 (donc en dessous du haut
+		 * de l'écran), ET que res est toujours à TRUE, on peut tester
+		 * la case supérieure */
+		if (P.y > 0 && res == TRUE) {
+			/* Si la case suppérieur n'a pas déjà été testée,
+			 * sinon on boucle infiniement, on peut la tester */
+			if (L.map[P_top.y][P_top.x].checked == FALSE)
+				res = isClose(L, P_top);
+		}
+		/* Sinon, cela veut dire que l'on à atteint le bord du haut
+		 * de l'écran. On peut donc sortir de la map, alors on retourne
+		 * FALSE. Un seul retour de FALSE et touts les appels
+		 * récursifs vont s'arrêter de tester les autres case et
+		 * retourner FALSE */
+		else
+			return FALSE;
+		/* Et ainsi de suite pour les autres cas ... */
+		if (P.y < L.h-1 && res == TRUE) {
+			if (L.map[P_bottom.y][P_bottom.x].checked == FALSE)
+				res = isClose(L, P_bottom);
+		}
+		else
+			return FALSE;
+		if (P.x > 0 && res == TRUE) {
+		       if (L.map[P_right.y][P_right.x].checked == FALSE)
+				res = isClose(L, P_right);
+		}
+		else
+			return FALSE;
+		if (P.x < L.w-1 && res == TRUE) {
+			if (L.map[P_left.y][P_left.x].checked == FALSE)
+				res = isClose(L, P_left);
+		}
+		else
+			return FALSE;
+		return res;
+	}
+}
+
+/**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+POINT findCharac(CASE** map, int w, int h) {
+	int i, j;
+	POINT charac;
+	charac.x = -1; charac.y = -1;
+	for (j=0; j<h; j++) {
+		for (i=0; i<w; i++) {
+			if (map[j][i].type == CHARAC ||
+			    map[j][i].type == CHARAC_ON_STORAGE) {
+				charac.x = i;
+				charac.y = j;
+			}
+		}
+	}
+	return charac;
+}
+
+/**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+LEVEL initChecking(LEVEL L) {
+	int i, j;
+	for (j=0; j<L.h; j++) {
+		for (i=0; i<L.w; i++) {
+			L.map[j][i].checked = FALSE;
+		}
+	}
+	return L;
 }
 
 /**
@@ -136,7 +230,7 @@ int main (int argc, char** argv) {
 	A.type = NONE; 
 
 	/* Boucle du jeu */
-	while (S.mode == PLAY && A.type != QUIT) {
+	while (S.mode.m_type == PLAY && A.type != QUIT) {
 		/* Initialisation du Sokoban et de l'affichage */
 		S = initSokoban_Game(S);
 		initDisplay(S);
@@ -144,30 +238,35 @@ int main (int argc, char** argv) {
 		/* Gestion du niveau */
 		while (S.lev.win != TRUE && S.lev.quit != TRUE) {
 			displaySokoban(S);
-			A = waitAction(S.but, S.But_H_Pix, S.But_W_Pix);
+			A = waitAction(S.but, S.But_H_Pix, S.But_W_Pix, S.mode);
 			S.lev = editSokoban_Game(S.lev, A);
 			S.lev.win = isWin(S.lev);
 		}
 
-		if (S.lev.win == TRUE)
+		/* Gestion du dernier écran avant de passer au niveau suivant */
+		if (S.lev.win == TRUE) {
+			displaySokoban(S);
+			displayMessage("Le niveau est terminer !");
 			S.lev = nextLevel(S.lev);
+		}
 		quitDisplay();
 	}
 
 	/* Boucle de l'éditeur */
-	while (S.mode == EDITOR && A.type != QUIT) {
+	while (S.mode.m_type == EDITOR && A.type != QUIT) {
 		/* Initialisation du Sokoban et de l'affichage */
 		S = initSokoban_Editor(S);
 		initDisplay(S);
 
+		/* Gestion de l'édition */
 		while (A.type != QUIT) {
 			displaySokoban(S);
-			A = waitAction(S.but, S.But_H_Pix, S.But_W_Pix);
-			S.lev = editSokoban_Editor(S.lev, A);
+			A = waitAction(S.but, S.But_H_Pix, S.But_W_Pix, S.mode);
+			S = editSokoban_Editor(S, A);
 		}
 	}
 
-        /* End */
+	/* Libération de la mémoire et sortie du programme */
 	S.lev.map = freeMap(S.lev.map, S.lev.w, S.lev.h);
 	S.lev.H.histoUndo = freeStack(S.lev.H.histoUndo);
 	S.lev.H.histoRedo = freeStack(S.lev.H.histoRedo);

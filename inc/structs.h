@@ -123,11 +123,13 @@ typedef struct level_infos {
  * POINT tl, tr, bl, br  : Point des différents côtés de la case.
  * 			   tl = Top Left = Haut gauche, etc.
  * CASE_TYPE type 	 : Type de la case.
+ * int checked		 : Indique si la case à déjà été vérifiée ou non.
  */
 
 typedef struct level_case {
 	POINT tl, tr, bl, br;
 	CASE_TYPE type;
+	int checked;
 } CASE;
 
 /**
@@ -180,6 +182,25 @@ typedef struct button {
 } BUTTON;
 
 /**
+ * ## Structure d'un mode .....................................................:
+ */
+
+/** MODE
+ * -----------------------------------------------------------------------------
+ * Structure qui contient toutes les informations sur le mode du programme
+ * dans lequel on se trouve.
+ * -----------------------------------------------------------------------------
+ *  MODE_TYPE mtype	    : Indique le mode du programme (jeu ou éditeur).
+ *  MODE_EDITOR_STEP m_step : Indique l'étape d'édition de niveau dans laquel
+ *  			      on se trouve (création ou jeu à l'envers).
+ */
+
+typedef struct mode {
+	MODE_TYPE m_type;
+	MODE_EDITOR_STEP m_step;
+} MODE;
+
+/**
  * ## Structure d'une fenêtre Sokoban .........................................:
  */
 
@@ -189,6 +210,7 @@ typedef struct button {
  * fenêtre.
  * -----------------------------------------------------------------------------
  * MODE mode  		      : Contient le mode du sokoban.
+ *
  * LEVEL lev  		      : Niveau de jeu à afficher.
  * BUTTON but 		      : Tableau contenant les boutons à afficher.
  * int Lev_H_Pix, Lev_W_Pix   : Hauteur et largeur en pixel du niveau.

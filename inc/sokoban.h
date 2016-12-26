@@ -37,19 +37,6 @@ SOKOBAN checkArgs(int argc, char** argv);
  * ## Contrôles et tests  .....................................................:
  */
 
-/** whatIsCaseType
- * -----------------------------------------------------------------------------
- * Détermine le type de la case en fonction du char c passé en argument.
- * -----------------------------------------------------------------------------
- * Renvoie le type CASE_TYPE de la case correspondant au caractère.
- */
-
-CASE_TYPE whatIsCaseType(char c);
-
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
-
 /** isResolvable
  * -----------------------------------------------------------------------------
  * Vérifie si le niveau L est correct et résoluble.
@@ -66,7 +53,7 @@ int isResolvable(LEVEL L);
 /** isClose
  * -----------------------------------------------------------------------------
  * Parcours récursivement toutes les cases où le personnage peut se déplacer
- * à partir de sa position pour savoir si le niveau L est fermer ou non.
+ * à partir de sa position pour savoir si le niveau L est fermé ou non.
  * -----------------------------------------------------------------------------
  * Renvoie TRUE si le niveau L est fermer, FALSE s'il ne l'est pas.
  */
@@ -103,6 +90,22 @@ LEVEL initChecking(LEVEL L);
 POINT findCharac(CASE** map, int w, int h);
 
 /**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+/** isSaveable
+ * -----------------------------------------------------------------------------
+ * Permet de savoir si le niveau peut être sauvegardé ou pas. Si le niveau
+ * arrive à cette fonction, c'est qu'il n'y à déjà qu'un personnage, au moins
+ * une caisse sur son emplacement et que la map est fermée. Il ne reste qu'à
+ * tester si l'utilisateur à déplacer la caisse de son emplacement.
+ * -----------------------------------------------------------------------------
+ * Renvoie TRUE si le niveau peut-être sauvegarder, sinon FALSE.
+ */
+
+int isSaveable(LEVEL L);
+
+/**
  * # Gestion de la mémoire ....................................................:
  */
 
@@ -128,5 +131,18 @@ CASE** mallocMap(int w, int h);
  */
 
 CASE** freeMap(CASE** map, int w, int h);
+
+/**
+ * ## Gestion de l'aléatoire ..................................................:
+ */
+
+/** rand_a_b
+ * -----------------------------------------------------------------------------
+ * Génère un nombre pseudo-aléatoire compris entre les bornes [a, b[.
+ * -----------------------------------------------------------------------------
+ * Renvoie l'entier généré.
+ */
+
+int rand_a_b(int a, int b);
 
 #endif

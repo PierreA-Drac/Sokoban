@@ -17,7 +17,7 @@ SOKOBAN preInitFirstLevel_Game(char** argv) {
 	SOKOBAN S;
 	if (strstr(argv[1], ".xsb") != NULL) {
 		S.mode.m_type = PLAY;
-		S.lev.infos.numLevel = 0;
+		S.lev.infos.numLevel = 1;
 		S.lev.infos.filename = argv[1];
 		/* La validité du fichier sera vérifier plus tard. */
 		return S;
@@ -83,7 +83,8 @@ SOKOBAN initSokoban_Game(SOKOBAN S) {
 SOKOBAN initLevel(SOKOBAN S) {
 	FILE* F = fopen(S.lev.infos.filename, "r");
 	if (!F) {
-		fprintf(stderr, "Error: File %s doesn't exist\n", S.lev.infos.filename);
+		fprintf(stderr, "Error: File %s doesn't exist\n",
+			S.lev.infos.filename);
 		exit(EXIT_FAILURE);
 	}
 
@@ -92,6 +93,7 @@ SOKOBAN initLevel(SOKOBAN S) {
 	if (!setLevelPosition(F, S.lev.infos.numLevel)) {
 		fprintf(stderr, "Error: Level n°%d not found in %s\n", 
 			S.lev.infos.numLevel, S.lev.infos.filename);
+		fclose(F);
 		exit(EXIT_FAILURE);
 	}
 	S.lev = createLevel(F, S.lev);	
@@ -156,9 +158,10 @@ LEVEL calcLevelSize(FILE* F, LEVEL L) {
 	do {
 		cprev = c;
 		c = fgetc(F);
-		/* Si deux retours chariot à la suite, ou fin du fichier ... */
+		/* Si deux retours chariot à la suite, commentaires ou 
+		 * fin du fichier ... */
 		if ((cprev == '\n' && c == '\r') || (cprev == '\n' && c == '\n')
-			  || c == EOF)
+		    || c == ';' || c == EOF)
 			next = FALSE;
 		/* Si caractère du niveau ... */
 		else if (c != '\r' && c != '\n')
@@ -220,6 +223,30 @@ CASE** readMap(FILE* F, int w, int h) {
 /**
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
  */
+
+CASE_TYPE whatIsCaseType(char c) {
+	if 	(c == ' ')
+		return EMPTY;
+	else if (c == '#')
+		return WALL;
+	else if (c == '$')
+		return BOX;
+	else if (c == '.')
+		return BOX_STORAGE;
+	else if (c == '*')
+		return BOX_ON_STORAGE;
+	else if (c == '@')
+		return CHARAC;
+	else if (c == '+')
+		return CHARAC_ON_STORAGE;
+	else
+		return -1;
+}
+
+/**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
 
 void calcPosMap(CASE** map, int w, int h) {
 	int i, j;

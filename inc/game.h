@@ -138,6 +138,19 @@ CASE** readMap(FILE* F, int w, int h);
  * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
  */
 
+/** whatIsCaseType
+ * -----------------------------------------------------------------------------
+ * Détermine le type de la case en fonction du char c passé en argument.
+ * -----------------------------------------------------------------------------
+ * Renvoie le type CASE_TYPE de la case correspondant au caractère.
+ */
+
+CASE_TYPE whatIsCaseType(char c);
+
+/**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
 /** calcPosMap
  * -----------------------------------------------------------------------------
  * Calcul les positions en pixels des cases de la map en fonction de 

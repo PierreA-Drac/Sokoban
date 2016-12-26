@@ -21,6 +21,9 @@
 /* Taille du buffer */
 #define BUFFER_SIZE 256
 
+/* Nombre de coups joués aléatoirement en mode édition par l'ordinateur */
+#define NB_ALEA 40
+
 /**
  * ## Boutons .................................................................:
  */

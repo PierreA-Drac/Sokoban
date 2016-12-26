@@ -161,6 +161,16 @@ int wait_key_arrow_clic_v2(char *touche, int *fleche, POINT *P) {
 }
 
 /**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+ACTION genActionAlea() {
+	ACTION A;
+	A.type = rand_a_b(CHARAC_TOP, CHARAC_RIGHT+1);
+	return A;
+}
+
+/**
  * # Modification par l'action ................................................:
  */
 
@@ -209,23 +219,27 @@ LEVEL handlingMovement(LEVEL L, ACTION A) {
 
 POINT getEditCases(ACTION_TYPE A, LEVEL L, CASE** dest, CASE** dest_box) {
 	if 	(A == CHARAC_TOP)    {
-		*dest  	  = &L.map[L.charac.y-1][L.charac.x];
-		*dest_box = &L.map[L.charac.y-2][L.charac.x];
+		*dest = &L.map[L.charac.y-1][L.charac.x];
+		if (L.charac.y > 1)
+			*dest_box = &L.map[L.charac.y-2][L.charac.x];
 		L.charac.y--;
 	}
 	else if (A == CHARAC_BOTTOM) {
-		*dest     = &L.map[L.charac.y+1][L.charac.x];
-		*dest_box = &L.map[L.charac.y+2][L.charac.x];
+		*dest = &L.map[L.charac.y+1][L.charac.x];
+		if (L.charac.y < L.h-2)
+			*dest_box = &L.map[L.charac.y+2][L.charac.x];
 		L.charac.y++;
 	}
 	else if (A == CHARAC_LEFT)   {
-		*dest     = &L.map[L.charac.y][L.charac.x-1];
-		*dest_box = &L.map[L.charac.y][L.charac.x-2];
+		*dest = &L.map[L.charac.y][L.charac.x-1];
+		if (L.charac.x > 1)
+			*dest_box = &L.map[L.charac.y][L.charac.x-2];
 		L.charac.x--;
 	}
 	else if (A == CHARAC_RIGHT)  {
-		*dest  	  = &L.map[L.charac.y][L.charac.x+1];
-		*dest_box = &L.map[L.charac.y][L.charac.x+2];
+		*dest = &L.map[L.charac.y][L.charac.x+1];
+		if (L.charac.x < L.w-2)
+			*dest_box = &L.map[L.charac.y][L.charac.x+2];
 		L.charac.x++;
 	}
 	return L.charac;
@@ -240,6 +254,8 @@ int isCollision(CASE* dest, CASE* dest_box) {
 	if (dest->type == WALL) {
 		return TRUE;
 	}
+	/* Si on arrive ici, c'est que le personnage n'est pas aux extrémitées
+	 * du plateau, et donc dest_box sera forcémment non-nul */
 	/* Si le personnage rencontre une caisse coincée par un mur ou une 
 	 * autre caisse */
 	else if (dest->type == BOX || dest->type == BOX_ON_STORAGE) {

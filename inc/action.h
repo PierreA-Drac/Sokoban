@@ -13,6 +13,7 @@
 #include "structs.h"
 #include "consts.h"
 #include "historic.h"
+#include "sokoban.h"
 
 /**
  * # Détermination de l'action ...............................................:
@@ -93,6 +94,19 @@ ACTION getMouseAction(ACTION A, BUTTON B[], int ButtonHeight,
  */
 
 int wait_key_arrow_clic_v2(char *touche, int *fleche, POINT *P);
+
+/**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+/** genActionAlea
+ * -----------------------------------------------------------------------------
+ * Génère une action de déplcement de personnage aléatoire.
+ * -----------------------------------------------------------------------------
+ * Renvoie l'action A générée aléatoirement.
+ */
+
+ACTION genActionAlea();
 
 /**
  * # Modification par l'action ................................................:

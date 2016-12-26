@@ -42,29 +42,6 @@ SOKOBAN checkArgs(int argc, char** argv) {
  * ## Contrôles et tests  .....................................................:
  */
 
-CASE_TYPE whatIsCaseType(char c) {
-	if 	(c == '#')
-		return WALL;
-	else if (c == '$')
-		return BOX;
-	else if (c == '.')
-		return BOX_STORAGE;
-	else if (c == '@')
-		return CHARAC;
-	else if (c == '*')
-		return BOX_ON_STORAGE;
-	else if (c == '+')
-		return CHARAC_ON_STORAGE;
-	else if (c == ' ')
-		return EMPTY;
-	else
-		return -1;
-}
-
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
-
 int isResolvable(LEVEL L) {
 	int i, j;
 	int nbBox = 0, nbBoxStorage = 0, nbCharac = 0;
@@ -183,6 +160,23 @@ LEVEL initChecking(LEVEL L) {
 }
 
 /**
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
+int isSaveable(LEVEL L) {
+	int i, j, count = 0;
+	for (j=0; j<L.h; j++) {
+		for (i=0; i<L.w; i++) {
+			if (L.map[j][i].type == BOX)
+				count++;
+		}
+	}
+	if (!count)
+		return FALSE;
+	return TRUE;
+}
+
+/**
  * ## Gestion de la mémoire ...................................................:
  */
 
@@ -218,18 +212,27 @@ CASE** freeMap(CASE** map, int w, int h) {
 }
 
 /**
+ * ## Gestion de l'aléatoire ..................................................:
+ */
+
+int rand_a_b(int a, int b) {
+	return ((rand()%(b-a)) + a);
+}
+
+/**
  * # MAIN .....................................................................:
  */
 
 int main (int argc, char** argv) {
 	SOKOBAN S;
 	ACTION A;
+	srand(time(NULL));	/* Initialisation de rand */
 
 	/* Pré-initialisation du Sokoban et du mode */
 	S = checkArgs(argc, argv);
 	A.type = NONE; 
 
-	/* Boucle du jeu */
+	/* Gestion du jeu */
 	while (S.mode.m_type == PLAY && A.type != QUIT) {
 		/* Initialisation du Sokoban et de l'affichage */
 		S = initSokoban_Game(S);
@@ -249,26 +252,34 @@ int main (int argc, char** argv) {
 			displayMessage("Le niveau est terminer !");
 			S.lev = nextLevel(S.lev);
 		}
+
+		/* Libération de la mémoire */
 		quitDisplay();
+		S.lev.map = freeMap(S.lev.map, S.lev.w, S.lev.h);
+		S.lev.H.histoUndo = freeStack(S.lev.H.histoUndo);
+		S.lev.H.histoRedo = freeStack(S.lev.H.histoRedo);
 	}
 
-	/* Boucle de l'éditeur */
-	while (S.mode.m_type == EDITOR && A.type != QUIT) {
+	/* Gestion de l'éditeur */
+	if (S.mode.m_type == EDITOR) {
 		/* Initialisation du Sokoban et de l'affichage */
 		S = initSokoban_Editor(S);
 		initDisplay(S);
 
 		/* Gestion de l'édition */
-		while (A.type != QUIT) {
+		while (S.lev.quit != TRUE) {
 			displaySokoban(S);
 			A = waitAction(S.but, S.But_H_Pix, S.But_W_Pix, S.mode);
 			S = editSokoban_Editor(S, A);
 		}
+
+		/* Libération de la mémoire */
+		quitDisplay();
+		S.lev.map = freeMap(S.lev.map, S.lev.w, S.lev.h);
+		S.lev.H.histoUndo = freeStack(S.lev.H.histoUndo);
+		S.lev.H.histoRedo = freeStack(S.lev.H.histoRedo);
 	}
 
-	/* Libération de la mémoire et sortie du programme */
-	S.lev.map = freeMap(S.lev.map, S.lev.w, S.lev.h);
-	S.lev.H.histoUndo = freeStack(S.lev.H.histoUndo);
-	S.lev.H.histoRedo = freeStack(S.lev.H.histoRedo);
+	/* Fin du programme */
         return 0;
 }

@@ -7,10 +7,23 @@
  * et à l'écriture du niveau dans un fichier .xsb.
  */
 
+#include <stdio.h>
+#include <string.h>
+#include <uvsqgraphics.h>
 #include "../inc/editor.h"
 
+#include "../inc/global.h"
+#include "../inc/historic.h"
+#include "../inc/action.h"
+#include "../inc/display.h"
+#include "../inc/game.h"
+
 /**
- * # Initialisation de l'éditeur ..............................................:
+ * 1. Fonctions d'interface ...................................................:
+ */
+
+/**
+ * 1.1 Initialisation de l'éditeur ............................................:
  */
 
 SOKOBAN preInitLevel_Editor(char** argv) {
@@ -34,9 +47,7 @@ SOKOBAN preInitLevel_Editor(char** argv) {
 	}
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 SOKOBAN initSokoban_Editor(SOKOBAN S) {
 	S.lev.win = FALSE;
@@ -48,8 +59,24 @@ SOKOBAN initSokoban_Editor(SOKOBAN S) {
 	return S;
 }
 
-/*
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+/**
+ * 1.2 Édition de la map ......................................................:
+ */
+
+SOKOBAN editSokoban_Editor(SOKOBAN S, ACTION A) {
+	if (A.type == QUIT)
+		S.lev.quit = TRUE;
+	/* Si on en est à l'étape de constrction du niveau */
+	else if (S.mode.m_step == BUILDING)
+		S = editSokoban_EditorBuild(S, A);
+	/* Si on en est à l'étape de jouer à l'envers */
+	else if (S.mode.m_step == PLAY_EDIT)
+		S = editSokoban_EditorPlay(S, A);
+	return S;
+}
+
+/**
+ * 2. Fonctions locales .......................................................:
  */
 
 SOKOBAN initLevel_Editor(SOKOBAN S) {
@@ -74,9 +101,7 @@ SOKOBAN initLevel_Editor(SOKOBAN S) {
 	return S;
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 int getNumLevel(char* filename) {
 	int numLevel = 0;
@@ -95,25 +120,7 @@ int getNumLevel(char* filename) {
 	return numLevel+1;
 }
 
-/**
- * # Édition de la map ........................................................:
- */
-
-SOKOBAN editSokoban_Editor(SOKOBAN S, ACTION A) {
-	if (A.type == QUIT)
-		S.lev.quit = TRUE;
-	/* Si on en est à l'étape de constrction du niveau */
-	else if (S.mode.m_step == BUILDING)
-		S = editSokoban_EditorBuild(S, A);
-	/* Si on en est à l'étape de jouer à l'envers */
-	else if (S.mode.m_step == PLAY_EDIT)
-		S = editSokoban_EditorPlay(S, A);
-	return S;
-}
-
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 SOKOBAN editSokoban_EditorBuild(SOKOBAN S, ACTION A) {
 	if 	(A.type == CHANGE_CASE)
@@ -133,9 +140,7 @@ SOKOBAN editSokoban_EditorBuild(SOKOBAN S, ACTION A) {
 	return S;
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 SOKOBAN editSokoban_EditorPlay(SOKOBAN S, ACTION A) {
 	if 	(A.type <= CHARAC_RIGHT && A.type >= CHARAC_TOP)
@@ -164,9 +169,7 @@ SOKOBAN editSokoban_EditorPlay(SOKOBAN S, ACTION A) {
 	return S;
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 void changeCaseType_Editor(CASE** map, int h, int w) {
 	if 	(map[h][w].type == EMPTY)
@@ -179,9 +182,7 @@ void changeCaseType_Editor(CASE** map, int h, int w) {
 		map[h][w].type = EMPTY;
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 SOKOBAN alea(SOKOBAN S) {
 	int i, nbHit;
@@ -202,7 +203,7 @@ SOKOBAN alea(SOKOBAN S) {
 }
 
 /**
- * # Écriture du Sokoban ......................................................:
+ * 2.2 Écriture du Sokoban ....................................................:
  */
 
 int save(SOKOBAN S) {
@@ -223,9 +224,7 @@ int save(SOKOBAN S) {
 	return TRUE;
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 void calcRealLevelSize(LEVEL L, int* w_start, int* w_end,
 				int* h_start, int* h_end) {
@@ -268,17 +267,13 @@ void calcRealLevelSize(LEVEL L, int* w_start, int* w_end,
 	}
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 void writeLevelNum(FILE* F, int n) {
 	fprintf(F, "\r\n; %d\r\n", n);
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 void writeLevelSchema(FILE* F, CASE** map, int w_start, int w_end,
 					   int h_start, int h_end) {
@@ -292,9 +287,7 @@ void writeLevelSchema(FILE* F, CASE** map, int w_start, int w_end,
 	}
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 char whatIsChar(CASE_TYPE type) {
 	if 	(type == EMPTY)

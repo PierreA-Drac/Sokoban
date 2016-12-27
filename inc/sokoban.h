@@ -4,8 +4,7 @@
  * # N° étudiant ..: 21501002
  *
  * Ce fichier contient la fonction main, appelant toutes les
- * fonctions nécéssaires aux grandes étapes de gestion du jeu,
- * ainsi que quelques fonctions globales au jeu et à l'éditeur.
+ * fonctions nécéssaires aux grandes étapes de gestion du jeu.
  */
 
 #ifndef __SOKOBAN_H
@@ -13,136 +12,83 @@
 
 #include "structs.h"
 #include "consts.h"
-#include "action.h"
-#include "game.h"
-#include "display.h"
-#include "editor.h"
-#include "historic.h"
 
 /**
- * # Gestion des arguments ....................................................:
+ * 1. Fonctions du MAIN .......................................................:
  */
 
-/** checkArgs
- * -----------------------------------------------------------------------------
- * Vérifie le nombre d'argument de la ligne de commande, appel les fonctions
- * d'initialiation du mode, du numéro du niveau et du nom du fichier cible.
- * -----------------------------------------------------------------------------
- * Renvoie un SOKOBAN S prêt à être initialisé.
+/** preInitStarting
+ * =============================================================================
+ * Organise la pré-initilisation du Sokoban S en récupérant les informations
+ * depuis la ligne de commande, en initialisant l'action A et la fonction rand
+ * par le temps actuel pour la gestion de l'aléatoire.
+ * =============================================================================
+ * Renvoie un Sokoban S prêt à être initialisé.
  */
 
-SOKOBAN checkArgs(int argc, char** argv);
+SOKOBAN preInitStarting(SOKOBAN S, ACTION A, int argc, char** argv);
 
-/**
- * ## Contrôles et tests  .....................................................:
+/* -------------------------------------------------------------------------- */
+
+/** initSokoban
+ * =============================================================================
+ * Lance l'initisation du Sokoban S en fonction de si le mode est à jouer ou
+ * éditeur, et initialise ensuite l'affichage.
+ * =============================================================================
+ * Renvoie le Sokoban S prêt à être afficher.
  */
 
-/** isResolvable
- * -----------------------------------------------------------------------------
- * Vérifie si le niveau L est correct et résoluble.
- * -----------------------------------------------------------------------------
- * Retourne TRUE si le niveau est correct, FALSE s'il ne l'est pas.
+SOKOBAN initSokoban(SOKOBAN S);
+
+/* -------------------------------------------------------------------------- */
+
+/** handlingGame
+ * =============================================================================
+ * Gère le déroulement d'une partie sur un niveau d'un Sokoban S en affichant
+ * le Sokoban, en récupérant l'action de l'utilisateur et en modifiant le 
+ * Sokoban en fonction de cette action. Test à chaque coup si l'utilisateur à
+ * gagner la partie. Modifie par effet de bord l'action A pour le cas où l'on 
+ * veut quitter.
+ * =============================================================================
+ * 
+ */
+SOKOBAN handlingGame(SOKOBAN S, ACTION* A);
+
+/* -------------------------------------------------------------------------- */
+
+/** handlingWin
+ * =============================================================================
+ * Test si l'utilisateur à gagner, si oui, gère l'écran de fin et fait passer
+ * le Sokoban S au niveau suivant.
+ * =============================================================================
+ * Renvoie le Sokoban S au niveau suivant si le niveau est terminé.
  */
 
-int isResolvable(LEVEL L);
+SOKOBAN handlingWin(SOKOBAN S);
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+/* -------------------------------------------------------------------------- */
+
+/** handlingEditor
+ * =============================================================================
+ * Gère le déroulement de l'édition d'un niveau du Sokoban S en affichant le
+ * Sokoban, en récupérant l'action de l'utilisateur et en modifiant le 
+ * Sokoban en conséquence. Modifie l'action A par effet de bord pour le cas
+ * où l'on veut quitter.
+ * =============================================================================
+ * Renvoie le Sokoban S modifié par l'utilisateur.
  */
 
-/** isClose
- * -----------------------------------------------------------------------------
- * Parcours récursivement toutes les cases où le personnage peut se déplacer
- * à partir de sa position pour savoir si le niveau L est fermé ou non.
- * -----------------------------------------------------------------------------
- * Renvoie TRUE si le niveau L est fermer, FALSE s'il ne l'est pas.
+SOKOBAN handlingEditor(SOKOBAN S, ACTION* A);
+
+/* -------------------------------------------------------------------------- */
+
+/** quitSokoban
+ * =============================================================================
+ * Gère la fermeture du Sokoban en libérant proprement toute la mémoire alloué.
+ * =============================================================================
+ * Renvoie le Sokoban S avec un historique et un niveau désalloué de la mémoire.
  */
 
-int isClose(LEVEL L, POINT P);
-
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
-
-/** initChecking
- * -----------------------------------------------------------------------------
- * Initialise les variables du niveau L vérifiant qu'une case à été testée
- * à FALSE.
- * -----------------------------------------------------------------------------
- * Renvoie le niveau L prêt à être testé.
- */
-
-LEVEL initChecking(LEVEL L);
-
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
-
-/** findCharac
- * -----------------------------------------------------------------------------
- * Cherche la case dans la map de largeur w et de hauteur h qui contient le
- * personnage.
- * -----------------------------------------------------------------------------
- * Renvoie un point comportant les indices en largeur et en hauteur de la case 
- * qui contient le personnage.
- */
-
-POINT findCharac(CASE** map, int w, int h);
-
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
-
-/** isSaveable
- * -----------------------------------------------------------------------------
- * Permet de savoir si le niveau peut être sauvegardé ou pas. Si le niveau
- * arrive à cette fonction, c'est qu'il n'y à déjà qu'un personnage, au moins
- * une caisse sur son emplacement et que la map est fermée. Il ne reste qu'à
- * tester si l'utilisateur à déplacer la caisse de son emplacement.
- * -----------------------------------------------------------------------------
- * Renvoie TRUE si le niveau peut-être sauvegarder, sinon FALSE.
- */
-
-int isSaveable(LEVEL L);
-
-/**
- * # Gestion de la mémoire ....................................................:
- */
-
-/** mallocMap
- * -----------------------------------------------------------------------------
- * Alloue dynamiquement la mémoire pour une map d'un niveau de largeur int w et
- * de hauteur int h.
- * -----------------------------------------------------------------------------
- * Renvoie un tableau à double dimensions CASE** map alloué et non-initialisé.
- */
-
-CASE** mallocMap(int w, int h);
-
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
-
-/** freeMap
- * -----------------------------------------------------------------------------
- * Libère la mémoire d'une map d'un niveau de Sokoban.
- * -----------------------------------------------------------------------------
- * Renvoie un pointeur NULL après avoir libérée la mémoire.
- */
-
-CASE** freeMap(CASE** map, int w, int h);
-
-/**
- * ## Gestion de l'aléatoire ..................................................:
- */
-
-/** rand_a_b
- * -----------------------------------------------------------------------------
- * Génère un nombre pseudo-aléatoire compris entre les bornes [a, b[.
- * -----------------------------------------------------------------------------
- * Renvoie l'entier généré.
- */
-
-int rand_a_b(int a, int b);
+SOKOBAN quitSokoban(SOKOBAN S);
 
 #endif

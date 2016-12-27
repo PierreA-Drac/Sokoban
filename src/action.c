@@ -7,10 +7,18 @@
  * applications des différentes actions du jeu.
  */
 
+#include <uvsqgraphics.h>
 #include "../inc/action.h"
 
+#include "../inc/global.h"
+#include "../inc/historic.h"
+
 /**
- * # Détermination de l'action ................................................:
+ * 1. Fonctions d'interface ...................................................:
+ */
+
+/**
+ * 1.1 Détermination de l'action ..............................................:
  */
 
 ACTION waitAction(BUTTON B[], int ButtonHeight, int ButtonWidth, MODE M) {
@@ -32,7 +40,124 @@ ACTION waitAction(BUTTON B[], int ButtonHeight, int ButtonWidth, MODE M) {
 }
 
 /**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ * 1.2 Génération aléatoire ...................................................:
+ */
+
+ACTION genActionAlea() {
+	ACTION A;
+	A.type = rand_a_b(CHARAC_TOP, CHARAC_RIGHT+1);
+	return A;
+}
+
+/**
+ * 1.3 Modification par l'action ..............................................:
+ */
+
+/**
+ * 1.3.1 Déplacement du personnage par action de l'utilisateur ................:
+ */
+
+LEVEL handlingMovement(LEVEL L, ACTION A) {
+	POINT characBackup = L.charac;
+	HISTOELEM* E;
+	CASE *src = &L.map[L.charac.y][L.charac.x];
+	CASE *dest = NULL, *dest_box = NULL;
+	/* src      : pointeur sur la case d'où vient le personnage */
+	/* dest     : pointeur sur la case où va le personnage */
+	/* dest_box : pointeur sur la case après celle où va le personnage pour
+	 * gérer le cas des caisses */
+
+	/* Initialisation des pointeurs sur les cases à traitées */
+	L.charac = getEditCases(A.type, L, &dest, &dest_box);
+
+	/* Test si le personnage peut se déplacer */
+	if (isCollision(dest, dest_box)) {
+		L.charac = characBackup;
+		return L;
+	}
+
+	/* Déplacement du personnage et MAJ de la pile Undo */
+	E = createHistoElem();
+	E->A = A.type;
+	E->ptr2 = moveCharac(src, dest, dest_box);
+	if (E->ptr2)
+		E->ptr1 = dest;
+	else
+		E->ptr1 = NULL;
+	L.H.histoUndo = pushHistoElem(L.H.histoUndo, E);
+	/* Vide la pile du Redo */
+	L.H.histoRedo = freeStack(L.H.histoRedo);
+
+	L.infos.nbHit++;
+	return L;
+}
+
+/**
+ * 1.3.2 Déplacement du personnage par Undo ...................................:
+ */
+
+LEVEL undo(LEVEL L) {
+	/* Si histoUndo vide, rien à faire */
+	if (!L.H.histoUndo.head)
+		return L;
+
+	HISTOELEM* E = createHistoElem();
+	L.H.histoUndo = popHistoElem(L.H.histoUndo, E);
+	CASE* src_charac = NULL;
+	CASE* dest_charac = NULL;
+
+	/* Initialisation des pointeurs pour traité le déplacement du personnage */
+ 	L.charac = undo_getEditCases(E->A, L, &src_charac, &dest_charac);
+
+	/* Déplacement du personnage et éventuellement d'une caisse */
+	undo_moveCharac(E, src_charac, dest_charac);
+
+	/* MAJ du nombre de coups & de la pile du Redo */
+	L.infos.nbHit--;
+	L.H.histoRedo = pushHistoElem(L.H.histoRedo, E);
+
+	return L;
+}
+
+/**
+ * 1.3.3 Déplacement du personnage par Redo ...................................:
+ */
+
+LEVEL redo(LEVEL L) {
+	/* Si histoRedo vide, rien à faire */
+	if (!L.H.histoRedo.head)
+		return L;
+
+	HISTOELEM* E = createHistoElem();
+	L.H.histoRedo = popHistoElem(L.H.histoRedo, E);
+	CASE *src = &L.map[L.charac.y][L.charac.x];
+	CASE *dest = NULL, *dest_box = NULL;
+
+	/* Initialisation des pointeurs sur les cases à traitées */
+	L.charac = getEditCases(E->A, L, &dest, &dest_box);
+
+	/* Déplacement du personnage et MAJ de la pile Undo */
+	moveCharac(src, dest, dest_box);
+
+	/* MAJ du nombre de coups & de la pile du Undo */
+	L.infos.nbHit++;
+	L.H.histoUndo = pushHistoElem(L.H.histoUndo, E);
+
+	return L;
+}
+
+/**
+ * 1.4 Ré-initialisation du niveau ............................................:
+ */
+
+LEVEL reInitGame(LEVEL L) {
+	while (L.H.histoUndo.head)
+		L = undo(L);
+	return L;
+}
+
+/**
+ * 2. Fonctions locales .......................................................:
  */
 
 ACTION getArrowAction(int arrow) {
@@ -49,9 +174,7 @@ ACTION getArrowAction(int arrow) {
 	return A;
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 ACTION getKeyAction(char key, MODE M) {
 	ACTION A;
@@ -91,9 +214,7 @@ ACTION getKeyAction(char key, MODE M) {
 	return A;
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 ACTION getMouseAction(ACTION A, BUTTON B[], int ButtonHeight, 
 					    int ButtonWidth, MODE M) {
@@ -107,17 +228,18 @@ ACTION getMouseAction(ACTION A, BUTTON B[], int ButtonHeight,
 	/* Si c'est un bouton */
 	if (A.p.y > (HEIGHT - ButtonHeight))
 		A.type = B[A.p.x / (ButtonWidth/NbButtons)].A;
-	/* Si c'est une case */
-	else if (M.m_type == EDITOR && M.m_step == BUILDING)
-		A.type = CHANGE_CASE;	/* Action active que pour l'éditeur */
+	/* Si c'est une case (action active que pour l'éditeur en mode 
+	 * construction */
+	else if (A.p.y < (HEIGHT - NB_BUT_H*ButtonHeight - 
+		 NB_SEPARATOR_V*H_SEPARATOR_V) &&
+		 M.m_type == EDITOR && M.m_step == BUILDING)
+		A.type = CHANGE_CASE;
 	else
 		A.type = NONE;
 	return A;
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 int wait_key_arrow_clic_v2(char *touche, int *fleche, POINT *P) { 
 	SDL_Event event;
@@ -160,62 +282,7 @@ int wait_key_arrow_clic_v2(char *touche, int *fleche, POINT *P) {
 	return EST_RIEN;
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
-
-ACTION genActionAlea() {
-	ACTION A;
-	A.type = rand_a_b(CHARAC_TOP, CHARAC_RIGHT+1);
-	return A;
-}
-
-/**
- * # Modification par l'action ................................................:
- */
-
-/**
- * ## Déplacement du personnage par action de l'utilisateur ...................:
- */
-
-LEVEL handlingMovement(LEVEL L, ACTION A) {
-	POINT characBackup = L.charac;
-	HISTOELEM* E;
-	CASE *src = &L.map[L.charac.y][L.charac.x];
-	CASE *dest = NULL, *dest_box = NULL;
-	/* src      : pointeur sur la case d'où vient le personnage */
-	/* dest     : pointeur sur la case où va le personnage */
-	/* dest_box : pointeur sur la case après celle où va le personnage pour
-	 * gérer le cas des caisses */
-
-	/* Initialisation des pointeurs sur les cases à traitées */
-	L.charac = getEditCases(A.type, L, &dest, &dest_box);
-
-	/* Test si le personnage peut se déplacer */
-	if (isCollision(dest, dest_box)) {
-		L.charac = characBackup;
-		return L;
-	}
-
-	/* Déplacement du personnage et MAJ de la pile Undo */
-	E = createHistoElem();
-	E->A = A.type;
-	E->ptr2 = moveCharac(src, dest, dest_box);
-	if (E->ptr2)
-		E->ptr1 = dest;
-	else
-		E->ptr1 = NULL;
-	L.H.histoUndo = pushHistoElem(L.H.histoUndo, E);
-	/* Vide la pile du Redo */
-	L.H.histoRedo = freeStack(L.H.histoRedo);
-
-	L.infos.nbHit++;
-	return L;
-}
-
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 POINT getEditCases(ACTION_TYPE A, LEVEL L, CASE** dest, CASE** dest_box) {
 	if 	(A == CHARAC_TOP)    {
@@ -245,9 +312,7 @@ POINT getEditCases(ACTION_TYPE A, LEVEL L, CASE** dest, CASE** dest_box) {
 	return L.charac;
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 int isCollision(CASE* dest, CASE* dest_box) {
 	/* Si le personnage rencontre un mur */
@@ -267,9 +332,7 @@ int isCollision(CASE* dest, CASE* dest_box) {
 	return FALSE;
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 CASE* moveCharac(CASE* src, CASE* dest, CASE* dest_box) {
 	/* Gère la case du personnage */
@@ -301,36 +364,7 @@ CASE* moveCharac(CASE* src, CASE* dest, CASE* dest_box) {
 	return NULL;
 }
 
-/**
- * ## Déplacement du personnage par Undo ......................................:
- */
-
-LEVEL undo(LEVEL L) {
-	/* Si histoUndo vide, rien à faire */
-	if (!L.H.histoUndo.head)
-		return L;
-
-	HISTOELEM* E = createHistoElem();
-	L.H.histoUndo = popHistoElem(L.H.histoUndo, E);
-	CASE* src_charac = NULL;
-	CASE* dest_charac = NULL;
-
-	/* Initialisation des pointeurs pour traité le déplacement du personnage */
- 	L.charac = undo_getEditCases(E->A, L, &src_charac, &dest_charac);
-
-	/* Déplacement du personnage et éventuellement d'une caisse */
-	undo_moveCharac(E, src_charac, dest_charac);
-
-	/* MAJ du nombre de coups & de la pile du Redo */
-	L.infos.nbHit--;
-	L.H.histoRedo = pushHistoElem(L.H.histoRedo, E);
-
-	return L;
-}
-
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 POINT undo_getEditCases(ACTION_TYPE A, LEVEL L, CASE** src, CASE** dest) {
 	*src = &L.map[L.charac.y][L.charac.x];
@@ -346,9 +380,7 @@ POINT undo_getEditCases(ACTION_TYPE A, LEVEL L, CASE** src, CASE** dest) {
 	return L.charac;
  }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 void undo_moveCharac(HISTOELEM* E, CASE* src, CASE* dest) {
 	/* Gère la source du personnage */
@@ -374,41 +406,4 @@ void undo_moveCharac(HISTOELEM* E, CASE* src, CASE* dest) {
 		else if (E->ptr2->type == BOX_ON_STORAGE)
 			E->ptr2->type = BOX_STORAGE;
 	}
-}
-
-/**
- * ## Déplacement du personnage par Redo ......................................:
- */
-
-LEVEL redo(LEVEL L) {
-	/* Si histoRedo vide, rien à faire */
-	if (!L.H.histoRedo.head)
-		return L;
-
-	HISTOELEM* E = createHistoElem();
-	L.H.histoRedo = popHistoElem(L.H.histoRedo, E);
-	CASE *src = &L.map[L.charac.y][L.charac.x];
-	CASE *dest = NULL, *dest_box = NULL;
-
-	/* Initialisation des pointeurs sur les cases à traitées */
-	L.charac = getEditCases(E->A, L, &dest, &dest_box);
-
-	/* Déplacement du personnage et MAJ de la pile Undo */
-	moveCharac(src, dest, dest_box);
-
-	/* MAJ du nombre de coups & de la pile du Undo */
-	L.infos.nbHit++;
-	L.H.histoUndo = pushHistoElem(L.H.histoUndo, E);
-
-	return L;
-}
-
-/**
- * ## Ré-initialisation du niveau .............................................:
- */
-
-LEVEL reInitGame(LEVEL L) {
-	while (L.H.histoUndo.head)
-		L = undo(L);
-	return L;
 }

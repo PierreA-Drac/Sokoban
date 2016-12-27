@@ -35,10 +35,11 @@ $(OBJ_PATH)%.o : $(SRC_PATH)%.c $(INC_PATH)%.h $(INC_PATH)consts.h $(INC_PATH)st
 	$(info Compilation de $< :)
 	$(CC) -c $< -o $@ $(CFLAGS)
 
-$(OBJ_PATH)sokoban.o : $(INC_PATH)game.h $(INC_PATH)display.h $(INC_PATH)editor.h $(INC_PATH)action.h $(INC_PATH)historic.h
-$(OBJ_PATH)game.o    : $(INC_PATH)sokoban.h $(INC_PATH)display.h $(INC_PATH)historic.h $(INC_PATH)action.h
-$(OBJ_PATH)action.o  : $(INC_PATH)historic.h $(INC_PATH)sokoban.h
-$(OBJ_PATH)editor.o  : $(INC_PATH)sokoban.h $(INC_PATH)display.h
+$(OBJ_PATH)sokoban.o : $(INC_PATH)global.h $(INC_PATH)historic.h $(INC_PATH)action.h $(INC_PATH)display.h $(INC_PATH)game.h $(INC_PATH)editor.h 
+$(OBJ_PATH)editor.o  : $(INC_PATH)global.h $(INC_PATH)historic.h $(INC_PATH)action.h $(INC_PATH)display.h $(INC_PATH)game.h
+$(OBJ_PATH)game.o    : $(INC_PATH)global.h $(INC_PATH)historic.h $(INC_PATH)action.h $(INC_PATH)display.h
+$(OBJ_PATH)action.o  : $(INC_PATH)global.h $(INC_PATH)historic.h 
+$(OBJ_PATH)global.o  : $(INC_PATH)game.h $(INC_PATH)editor.h 
 
 ## Nettoyage ..................................................................:
 

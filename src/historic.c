@@ -7,10 +7,17 @@
  * d'un Sokoban.
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <uvsqgraphics.h>
 #include "../inc/historic.h"
 
 /**
- * # Création et initialisation ...............................................:
+ * 1. Fonctions d'inferface ...................................................:
+ */
+
+/**
+ * 1.1 Création et initialisation .............................................:
  */
 
 HISTORIC createHisto() {
@@ -20,9 +27,7 @@ HISTORIC createHisto() {
 	return H;
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 HISTOELEM* createHistoElem() {
 	HISTOELEM* E;
@@ -39,7 +44,7 @@ HISTOELEM* createHistoElem() {
 }
 
 /**
- * # Ajout et retrait d'élément ...............................................:
+ * 1.2 Ajout et retrait d'élément .............................................:
  */
 
 STACK pushHistoElem(STACK S, HISTOELEM* E) {
@@ -52,9 +57,7 @@ STACK pushHistoElem(STACK S, HISTOELEM* E) {
 	return S;
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 STACK popHistoElem(STACK S, HISTOELEM* E) {
 	HISTOELEM* toFree;
@@ -81,7 +84,7 @@ STACK popHistoElem(STACK S, HISTOELEM* E) {
 }
 
 /**
- * # Libération de la mémoire .................................................:
+ * 1.3 Libération de la mémoire ...............................................:
  */
 
 STACK freeStack(STACK S) {
@@ -101,9 +104,7 @@ STACK freeStack(STACK S) {
 	}
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 HISTOELEM* freeHistoElem(HISTOELEM* E) {
 	free(E);

@@ -7,10 +7,22 @@
  * durant une partie, et à la lecture dans le fichier .xsb.
  */
 
+#include <stdio.h>
+#include <string.h>
+#include <uvsqgraphics.h>
 #include "../inc/game.h"
 
+#include "../inc/global.h"
+#include "../inc/historic.h"
+#include "../inc/action.h"
+#include "../inc/display.h"
+
 /**
- * # Initialisation du Sokoban ................................................:
+ * 1. Fonctions d'inferface ...................................................:
+ */
+
+/**
+ * 1.1 Initialisation du Sokoban ..............................................:
  */
 
 SOKOBAN preInitFirstLevel_Game(char** argv) {
@@ -28,9 +40,7 @@ SOKOBAN preInitFirstLevel_Game(char** argv) {
 	}
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 SOKOBAN preInitOtherLevel_Game(char** argv) {
 	SOKOBAN S;
@@ -55,9 +65,7 @@ SOKOBAN preInitOtherLevel_Game(char** argv) {
 	}
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 SOKOBAN initSokoban_Game(SOKOBAN S) {
 	S.lev.win = FALSE;
@@ -76,8 +84,82 @@ SOKOBAN initSokoban_Game(SOKOBAN S) {
 	return S;
 }
 
+/* -------------------------------------------------------------------------- */
+
+void calcPosMap(CASE** map, int w, int h) {
+	int i, j;
+	for (j=0; j<h; j++) {
+		for (i=0; i<w; i++) {
+			map[j][i].tl.x = i*CASE_SIZE;
+			map[j][i].tl.y = h*CASE_SIZE - j*CASE_SIZE;
+			map[j][i].tr.x = map[j][i].tl.x + CASE_SIZE;
+			map[j][i].tr.y = map[j][i].tl.y;
+			map[j][i].bl.x = map[j][i].tl.x;
+			map[j][i].bl.y = map[j][i].tl.y - CASE_SIZE;
+			map[j][i].br.y = map[j][i].bl.y;
+			map[j][i].br.x = map[j][i].tr.x;
+		}
+	}
+}
+
 /**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ * 1.2 Édition du Sokoban .....................................................:
+ */
+
+LEVEL editSokoban_Game(LEVEL L, ACTION A) {
+	if (A.type <= CHARAC_RIGHT && A.type >= CHARAC_TOP)
+		L = handlingMovement(L, A);
+	else if (A.type == INIT)
+		L = reInitGame(L);
+	else if (A.type >= QUIT && A.type <= NEXT) {
+		if (A.type == NEXT)
+			L = nextLevel(L);
+		else if (A.type == PREV)
+			L = prevLevel(L);
+		L.quit = TRUE;
+	}
+	else if (A.type == UNDO)
+		L = undo(L);
+	else if (A.type == REDO)
+		L = redo(L);
+	return L;
+}
+
+/* -------------------------------------------------------------------------- */
+
+LEVEL nextLevel(LEVEL L) {
+	L.infos.numLevel++;
+	return L;
+}
+
+/* -------------------------------------------------------------------------- */
+
+LEVEL prevLevel(LEVEL L) {
+	L.infos.numLevel--;
+	return L;
+}
+
+/**
+ * 1.3 Contrôle du Sokoban ......................................................:
+ */
+
+int isWin(LEVEL L) {
+	int i, j;
+	int nbBox = 0;
+	for (j=0; j<L.h; j++) {
+		for (i=0; i<L.w; i++) {
+			if (L.map[j][i].type == BOX)
+				nbBox++;
+		}
+	}
+	if (nbBox == 0)
+		return TRUE;
+	else
+		return FALSE;
+}
+
+/**
+ * 2. Fonctions locales .......................................................:
  */
 
 SOKOBAN initLevel(SOKOBAN S) {
@@ -104,9 +186,7 @@ SOKOBAN initLevel(SOKOBAN S) {
 	return S;
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 int setLevelPosition(FILE* F, int numLevel) {
 	char str[BUFFER_SIZE];
@@ -125,9 +205,7 @@ int setLevelPosition(FILE* F, int numLevel) {
 	return FALSE;
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 LEVEL createLevel(FILE* F, LEVEL L) {
 	fpos_t pos;		/* Contient la position de lecture du fichier */
@@ -140,9 +218,7 @@ LEVEL createLevel(FILE* F, LEVEL L) {
 	return L;
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 LEVEL calcLevelSize(FILE* F, LEVEL L) {
 	char c,	cprev;
@@ -180,9 +256,7 @@ LEVEL calcLevelSize(FILE* F, LEVEL L) {
 	return L;
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 CASE** readMap(FILE* F, int w, int h) {
 	int i, j;
@@ -220,9 +294,7 @@ CASE** readMap(FILE* F, int w, int h) {
 	return map;
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 CASE_TYPE whatIsCaseType(char c) {
 	if 	(c == ' ')
@@ -241,85 +313,4 @@ CASE_TYPE whatIsCaseType(char c) {
 		return CHARAC_ON_STORAGE;
 	else
 		return -1;
-}
-
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
-
-
-void calcPosMap(CASE** map, int w, int h) {
-	int i, j;
-	for (j=0; j<h; j++) {
-		for (i=0; i<w; i++) {
-			map[j][i].tl.x = i*CASE_SIZE;
-			map[j][i].tl.y = h*CASE_SIZE - j*CASE_SIZE;
-			map[j][i].tr.x = map[j][i].tl.x + CASE_SIZE;
-			map[j][i].tr.y = map[j][i].tl.y;
-			map[j][i].bl.x = map[j][i].tl.x;
-			map[j][i].bl.y = map[j][i].tl.y - CASE_SIZE;
-			map[j][i].br.y = map[j][i].bl.y;
-			map[j][i].br.x = map[j][i].tr.x;
-		}
-	}
-}
-
-/**
- * # Édition du Sokoban .......................................................:
- */
-
-LEVEL editSokoban_Game(LEVEL L, ACTION A) {
-	if (A.type <= CHARAC_RIGHT && A.type >= CHARAC_TOP)
-		L = handlingMovement(L, A);
-	else if (A.type == INIT)
-		L = reInitGame(L);
-	else if (A.type >= QUIT && A.type <= NEXT) {
-		if (A.type == NEXT)
-			L = nextLevel(L);
-		else if (A.type == PREV)
-			L = prevLevel(L);
-		L.quit = TRUE;
-	}
-	else if (A.type == UNDO)
-		L = undo(L);
-	else if (A.type == REDO)
-		L = redo(L);
-	return L;
-}
-
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
-
-LEVEL nextLevel(LEVEL L) {
-	L.infos.numLevel++;
-	return L;
-}
-
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
-
-LEVEL prevLevel(LEVEL L) {
-	L.infos.numLevel--;
-	return L;
-}
-
-/**
- * # Contrôle .................................................................:
- */
-
-int isWin(LEVEL L) {
-	int i, j;
-	int nbBox = 0;
-	for (j=0; j<L.h; j++) {
-		for (i=0; i<L.w; i++) {
-			if (L.map[j][i].type == BOX)
-				nbBox++;
-		}
-	}
-	if (nbBox == 0)
-		return TRUE;
-	else
-		return FALSE;
 }

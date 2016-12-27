@@ -11,11 +11,11 @@
 #define __CONSTS_H
 
 /**
- * # Constantes ...............................................................:
+ * 1. Constantes ..............................................................:
  */
 
 /**
- * ## Divers ..................................................................:
+ * 1.1 Divers .................................................................:
  */
 
 /* Taille du buffer */
@@ -25,7 +25,7 @@
 #define NB_ALEA 40
 
 /**
- * ## Boutons .................................................................:
+ * 1.2 Boutons ................................................................:
  */
 
 /* Nombre de boutons en mode jeu */
@@ -45,7 +45,7 @@
 /* N.B. : Les ratios ci-dessus sont déterminés par des tests empiriques. */
 
 /**
- * ## Affichage ...............................................................:
+ * 1.3 Affichage ..............................................................:
  */
 
 /* Taille d'une case carré en pixel, peut prendre les valeurs 16 et 32 */
@@ -60,7 +60,7 @@
 #define HEIGHT_MAP_EDITOR 19
 #define WIDTH_MAP_EDITOR 30
 
-/* Nombre de séparateur verticaux */
+/* Nombre de séparateur horizontaux */
 #define NB_SEPARATOR_V 2
 
 /* Hauteur des séparateurs horizontaux (en pixel) */
@@ -69,14 +69,30 @@
 /* Nombre d'emplacement de la hauteur des boutons utilisés */
 #define NB_BUT_H 2
 
+/* Temps d'attente (en secondes) pour les messages affichés à l'écran */
+#define WAIT_TIME_MESSAGE 3
+
 /**
- * # Énumérations .............................................................:
+ * 2. Énumérations ............................................................:
+ */
+
+/**
+ * 2.1 Déclarations ...........................................................:
+ */
+
+typedef enum action_type ACTION_TYPE;
+typedef enum mode_type MODE_TYPE;
+typedef enum mode_editor_step MODE_EDITOR_STEP;
+typedef enum case_type CASE_TYPE;
+
+/**
+ * 2.2 Définitions ............................................................:
  */
 
 /** ACTION_TYPE
- * -----------------------------------------------------------------------------
+ * =============================================================================
  * Indique quelle action à été choisie par l'utilisateur.
- * -----------------------------------------------------------------------------
+ * =============================================================================
  * CHARAC      : Déplace le personnage sur le jeu.
  * UNDO, REDO  : Reculer ou avancer dans l'historique.
  * INIT, QUIT  : Réinitialise le niveau en cours ou quitte le jeu.
@@ -88,7 +104,7 @@
  * NONE        : Aucune action.
  */
 
-typedef enum action_type {
+enum action_type {
 	CHARAC_TOP, CHARAC_BOTTOM, CHARAC_LEFT, CHARAC_RIGHT,
 	UNDO, REDO,
 	INIT, QUIT,
@@ -97,49 +113,43 @@ typedef enum action_type {
 	CHANGE_CASE,
 	PLAY_BACK,
 	NONE
-} ACTION_TYPE;
+};
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 /** MODE_TYPE
- * -----------------------------------------------------------------------------
+ * =============================================================================
  * Indique dans quel mode du programme on se trouve.
- * -----------------------------------------------------------------------------
+ * =============================================================================
  * PLAY   : Mode de jeu dans un niveau.
  * EDITOR : Mode de création de niveau.
  */
 
-typedef enum mode_type {
+enum mode_type {
 	PLAY, EDITOR
-} MODE_TYPE;
+};
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 /** MODE_EDITOR_STEP
- * -----------------------------------------------------------------------------
+ * =============================================================================
  * Indique dans quellé étape du mode éditeur on se trouve.
- * -----------------------------------------------------------------------------
+ * =============================================================================
  * BUILDING   : Mode de création du niveau à la souris.
  * PLAY_EDIT  : Mode où on joue à l'envers pour finaliser le placements des
  * 		caisses et du personnage.
  */
 
-typedef enum mode_editor_step {
+enum mode_editor_step {
 	BUILDING, PLAY_EDIT
-} MODE_EDITOR_STEP;
+};
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 /** CASE_TYPE
- * -----------------------------------------------------------------------------
+ * =============================================================================
  * Indique le type d'une case.
- * -----------------------------------------------------------------------------
+ * =============================================================================
  * WALL 	     : Mur.
  * BOX 	       	     : Caisse.
  * BOX_STORAGE       : Rangement d'une caisse.
@@ -149,8 +159,8 @@ typedef enum mode_editor_step {
  * EMPTY	     : Case vide.
  */
 
-typedef enum case_type {
+enum case_type {
 	WALL, BOX, BOX_STORAGE, CHARAC, BOX_ON_STORAGE, CHARAC_ON_STORAGE, EMPTY
-} CASE_TYPE;
+};
 
 #endif

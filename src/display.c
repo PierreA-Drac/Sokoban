@@ -6,10 +6,17 @@
  * Ce fichier contient les fonctions d'affichage du programme.
  */
 
+#include <stdio.h>
+#include <string.h>
+#include <uvsqgraphics.h>
 #include "../inc/display.h"
 
 /**
- * # Initialisation de l'affichage ............................................:
+ * 1. Fonctions d'interface ...................................................:
+ */
+
+/**
+ * 1.1 Initialisation de l'affichage ..........................................:
  */
 
 void initDisplay(SOKOBAN S) {
@@ -26,8 +33,18 @@ void initDisplay(SOKOBAN S) {
 }
 
 /**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ * 1.2 Affichage ..............................................................:
  */
+
+void displaySokoban(SOKOBAN S) {
+	fill_screen(black);
+	displayButtons(S.but, S.But_W_Pix, S.But_H_Pix, S.mode);
+	displayLevel(S.lev);
+	displayInfosLevel(S.lev, S.But_H_Pix);
+	affiche_all();
+}
+
+/* -------------------------------------------------------------------------- */
 
 SOKOBAN initButtons(SOKOBAN S) {
 	int i, NbButtons;
@@ -60,8 +77,38 @@ SOKOBAN initButtons(SOKOBAN S) {
 	return S;
 }
 
+/* -------------------------------------------------------------------------- */
+
+void displayMessage(char* text) {
+	POINT p;
+	int size = 20;
+	p.x = WIDTH/2 - largeur_texte(text, size)/2;
+	while (p.x < 0) {
+		size--;
+		p.x = WIDTH/2 - largeur_texte(text, size)/2;
+	}
+	p.y = hauteur_texte(text, size);
+	aff_pol(text, size, p, tan);
+	affiche_all();
+	sleep(WAIT_TIME_MESSAGE);
+}
+
 /**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ * 1.3 Fermeture de l'affichage ...............................................:
+ */
+
+void quitDisplay() {
+	/* Libère la surface de la fenêtre et ferme les systèmes de la SDL */
+	printf("Free surface\n");
+	SDL_FreeSurface(SDL_screen);
+	printf("Quitsubsystem\n");
+	SDL_QuitSubSystem(SDL_INIT_VIDEO);
+	printf("Quit\n");
+	SDL_Quit();
+}
+
+/**
+ * 2. Fonctions locales .......................................................:
  */
 
 BUTTON initSpecificButton(BUTTON B, int i, MODE M) {
@@ -124,21 +171,7 @@ BUTTON initSpecificButton(BUTTON B, int i, MODE M) {
 	return B;
 }
 
-/**
- * # Affichage ................................................................:
- */
-
-void displaySokoban(SOKOBAN S) {
-	fill_screen(black);
-	displayButtons(S.but, S.But_W_Pix, S.But_H_Pix, S.mode);
-	displayLevel(S.lev);
-	displayInfosLevel(S.lev, S.But_H_Pix);
-	affiche_all();
-}
-
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 void displayButtons(BUTTON B[], float W, float H, MODE M) {
 	int i, NbButtons;
@@ -169,9 +202,7 @@ void displayButtons(BUTTON B[], float W, float H, MODE M) {
 	}
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 void displayLevel(LEVEL L) {
 	int i, j;
@@ -209,9 +240,7 @@ void displayLevel(LEVEL L) {
 	}
 }
 
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
+/* -------------------------------------------------------------------------- */
 
 void displayInfosLevel(LEVEL L, int h_but) {
 	/* Fonction très moche, et mal organisé */
@@ -238,36 +267,4 @@ void displayInfosLevel(LEVEL L, int h_but) {
 	Ptmp1.x = 0;     Ptmp1.y = L.map[0][0].tl.y + H_SEPARATOR_V-1;
 	Ptmp2.x = WIDTH; Ptmp2.y = Ptmp1.y - H_SEPARATOR_V+1;
 	draw_fill_rectangle(Ptmp1, Ptmp2, dimgray);
-}
-
-/**
- * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
- */
-
-void displayMessage(char* text) {
-	POINT p;
-	int size = 20;
-	p.x = WIDTH/2 - largeur_texte(text, size)/2;
-	while (p.x < 0) {
-		size--;
-		p.x = WIDTH/2 - largeur_texte(text, size)/2;
-	}
-	p.y = hauteur_texte(text, size);
-	aff_pol(text, size, p, tan);
-	affiche_all();
-	sleep(3);
-}
-
-/**
- * # Fermeture de l'affichage .................................................:
- */
-
-void quitDisplay() {
-	/* Libère la surface de la fenêtre et ferme les systèmes de la SDL */
-	printf("Free surface\n");
-	SDL_FreeSurface(SDL_screen);
-	printf("Quitsubsystem\n");
-	SDL_QuitSubSystem(SDL_INIT_VIDEO);
-	printf("Quit\n");
-	SDL_Quit();
 }

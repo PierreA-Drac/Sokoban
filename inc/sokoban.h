@@ -20,13 +20,13 @@
 /** preInitStarting
  * =============================================================================
  * Organise la pré-initilisation du Sokoban S en récupérant les informations
- * depuis la ligne de commande, en initialisant l'action A et la fonction rand
+ * depuis la ligne de commande, en initialisant l'action A, et la fonction rand
  * par le temps actuel pour la gestion de l'aléatoire.
  * =============================================================================
  * Renvoie un Sokoban S prêt à être initialisé.
  */
 
-SOKOBAN preInitStarting(SOKOBAN S, ACTION A, int argc, char** argv);
+SOKOBAN preInitStarting(SOKOBAN S, ACTION* A, int argc, char** argv);
 
 /* -------------------------------------------------------------------------- */
 
@@ -59,8 +59,8 @@ SOKOBAN handlingGame(SOKOBAN S, ACTION* A);
 
 /** handlingWin
  * =============================================================================
- * Test si l'utilisateur à gagner, si oui, gère l'écran de fin et fait passer
- * le Sokoban S au niveau suivant.
+ * Test si l'utilisateur à gagner, si oui, gère l'écran de fin, libère la
+ * mémoier et fait passer le Sokoban S au niveau suivant.
  * =============================================================================
  * Renvoie le Sokoban S au niveau suivant si le niveau est terminé.
  */

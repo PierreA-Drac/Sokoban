@@ -21,9 +21,10 @@
  * 1. Fonctions du MAIN .......................................................:
  */
 
-SOKOBAN preInitStarting(SOKOBAN S, ACTION A, int argc, char** argv) {
+SOKOBAN preInitStarting(SOKOBAN S, ACTION* A, int argc, char** argv) {
 	S = checkArgs(argc, argv);
-	A.type = NONE; 
+	S.lev.quit = FALSE;
+	A->type = NONE; 
 	srand(time(NULL));
 	return S;
 }
@@ -92,26 +93,24 @@ int main (int argc, char** argv) {
 	ACTION A;
 
 	/* Pré-initialisation du Sokoban, du mode, de l'action et de rand */
-	S = preInitStarting(S, A, argc, argv);
+	S = preInitStarting(S, &A, argc, argv);
 
-	/* Initialisation du Sokoban et de l'affichage */
-	S = initSokoban(S);
-
-	/* Gestion du jeu */
-	while (S.mode.m_type == PLAY && A.type != QUIT) {
-		/* Gestion du niveau */
-		S = handlingGame(S, &A);
-		/* Gestion du dernier écran avant de passer au niveau suivant */
-		S = handlingWin(S);
-	}
-
-	/* Gestion de l'éditeur */
-	if (S.mode.m_type == EDITOR) {
+	while (S.lev.quit != TRUE) {
+		/* Initialisation du Sokoban et de l'affichage */
+		S = initSokoban(S);
+		/* Gestion du jeu */
+		if (S.mode.m_type == PLAY ) {
+			/* Gestion du niveau */
+			S = handlingGame(S, &A);
+			/* Gestion du dernier écran avant de passer au niveau suivant */
+			S = handlingWin(S);
+		}
 		/* Gestion de l'édition */
-		S = handlingEditor(S, &A);
+		else if (S.mode.m_type == EDITOR) {
+			S = handlingEditor(S, &A);
+		}
+		/* Libération de la mémoire */
+		S = quitSokoban(S);
 	}
-
-	/* Libération de la mémoire */
-	S = quitSokoban(S);
         return 0;
 }

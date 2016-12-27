@@ -72,7 +72,7 @@ STACK popHistoElem(STACK S, HISTOELEM* E);
 
 /** freeStack
  * =============================================================================
- * Libère de la mémoire la pile S.
+ * Libère la mémoire de la pile S.
  * =============================================================================
  * Retourne une pile vide.
  */
@@ -83,7 +83,7 @@ STACK freeStack(STACK S);
 
 /** freeHistoElem
  * =============================================================================
- * Libère de la mémoire l'élément d'historique pointé par E.
+ * Libère la mémoire de l'élément d'historique pointé par E.
  * =============================================================================
  * Renvoie un pointeur NULL.
  */

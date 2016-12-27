@@ -50,8 +50,9 @@ SOKOBAN initSokoban(SOKOBAN S);
  * gagner la partie. Modifie par effet de bord l'action A pour le cas où l'on 
  * veut quitter.
  * =============================================================================
- * 
+ * Revnvoie le Sokoban S modifié par l'utilisateur.
  */
+
 SOKOBAN handlingGame(SOKOBAN S, ACTION* A);
 
 /* -------------------------------------------------------------------------- */

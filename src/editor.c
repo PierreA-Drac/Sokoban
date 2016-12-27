@@ -203,7 +203,7 @@ SOKOBAN alea(SOKOBAN S) {
 }
 
 /**
- * 2.2 Écriture du Sokoban ....................................................:
+ * 2.1 Écriture du Sokoban ....................................................:
  */
 
 int save(SOKOBAN S) {

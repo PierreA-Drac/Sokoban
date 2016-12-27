@@ -59,7 +59,7 @@ SOKOBAN initSokoban_Editor(SOKOBAN S);
 SOKOBAN editSokoban_Editor(SOKOBAN S, ACTION A);
 
 /**
- * 2.2 Fonctions locales ......................................................:
+ * 2 Fonctions locales ........................................................:
  */
 
 /** initLevel_Editor
@@ -131,7 +131,7 @@ void changeCaseType_Editor(CASE** map, int h, int w);
 SOKOBAN alea(SOKOBAN S);
 
 /**
- * 2.2 Écriture du Sokoban ....................................................:
+ * 2.1 Écriture du Sokoban ....................................................:
  */
 
 /** save

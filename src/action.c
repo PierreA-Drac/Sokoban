@@ -287,7 +287,7 @@ int wait_key_arrow_clic_v2(char *touche, int *fleche, POINT *P) {
 POINT getEditCases(ACTION_TYPE A, LEVEL L, CASE** dest, CASE** dest_box) {
 	if 	(A == CHARAC_TOP)    {
 		*dest = &L.map[L.charac.y-1][L.charac.x];
-		if (L.charac.y > 1)
+		if (L.charac.y > 1) /* Sinon, on sort du tableau ... */
 			*dest_box = &L.map[L.charac.y-2][L.charac.x];
 		L.charac.y--;
 	}

@@ -17,7 +17,7 @@ OBJ = $(SRC:$(SRC_PATH)%.c=$(OBJ_PATH)%.o)
 
 ARGS = -n 8 level/sasquatch1.xsb
 
-# Fonctions ...................................................................:
+# Cibles ......................................................................:
 
 ## Lancement ..................................................................:
 
@@ -34,6 +34,8 @@ compil : $(OBJ)
 $(OBJ_PATH)%.o : $(SRC_PATH)%.c $(INC_PATH)%.h $(INC_PATH)consts.h $(INC_PATH)structs.h
 	$(info Compilation de $< :)
 	$(CC) -c $< -o $@ $(CFLAGS)
+
+## Dépendances supplémentaires ................................................:
 
 $(OBJ_PATH)sokoban.o : $(INC_PATH)global.h $(INC_PATH)historic.h $(INC_PATH)action.h $(INC_PATH)display.h $(INC_PATH)game.h $(INC_PATH)editor.h 
 $(OBJ_PATH)editor.o  : $(INC_PATH)global.h $(INC_PATH)historic.h $(INC_PATH)action.h $(INC_PATH)display.h $(INC_PATH)game.h

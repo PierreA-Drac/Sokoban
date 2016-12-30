@@ -26,6 +26,8 @@ ARGS = -n 8 level/sasquatch1.xsb
 
 # Cibles ......................................................................:
 
+.PHONY : clean report
+
 ## Lancement ..................................................................:
 
 test : compil 
@@ -34,7 +36,9 @@ test : compil
 
 ## Compilation ................................................................:
 
-compil : $(OBJ)
+compil : $(EXEC)
+
+$(EXEC) : $(OBJ)
 	$(info Édition des liens dans $(EXEC) :)
 	$(CC) $^ -o $(EXEC) $(LDFLAGS)
 

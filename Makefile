@@ -4,9 +4,13 @@
 
 # Variables ...................................................................:
 
+## Compilateur ................................................................:
+
 CC = gcc
 CFLAGS = -g3 -Wall `sdl-config --cflags`
 LDFLAGS = -luvsqgraphics `sdl-config --libs` -lm -lSDL_ttf
+
+## Structure du projet ........................................................:
 
 EXEC = sokoban
 SRC_PATH = src/
@@ -15,6 +19,8 @@ INC_PATH = inc/
 REPORT_PATH = report/
 SRC = $(shell find $(SRC_PATH)*.c)
 OBJ = $(SRC:$(SRC_PATH)%.c=$(OBJ_PATH)%.o)
+
+## Autres .....................................................................:
 
 ARGS = -n 8 level/sasquatch1.xsb
 

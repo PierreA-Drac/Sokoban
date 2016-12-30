@@ -193,6 +193,10 @@ int setLevelPosition(FILE* F, int numLevel) {
 	char n[BUFFER_SIZE];
 	/* Conversion du numéro du level pour strstr */
 	sprintf(n, "%d", numLevel); 
+	if (numLevel < 1) {
+		fprintf(stderr, "Error: Level ID must be superior to 0\n");
+		exit(EXIT_FAILURE);
+	}
 	/* Tant qu'on atteint pas la fin du fichier et qu'on ne trouve pas le
 	 * numéro du niveau dans la ligne lue, on continue de lire */
 	while (fgets(str, BUFFER_SIZE, F) != NULL) {

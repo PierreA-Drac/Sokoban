@@ -136,7 +136,9 @@ SOKOBAN initLevel(SOKOBAN S);
 /** setLevelPosition 
  * =============================================================================
  * Place le pointeur de lecture du fichier qui contient le niveau à
- * l'emplacement où commencer la lecture du niveau par effet de bord.
+ * l'emplacement où commencer la lecture du niveau par effet de bord, et
+ * vérifie que le numéro du niveau demandé est supérieur ou égal à 1 (sinon,
+ * on avait un problème avec le level numéro 0).
  * =============================================================================
  * Renvoie TRUE si le placement à réussis, FALSE si le niveau
  * n'existe pas.

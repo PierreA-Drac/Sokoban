@@ -3,8 +3,11 @@ tags
 
 # Fichiers binaires
 sokoban
-obj/*
+*.o
 .fuse*
 
 # Fichiers temporaires
 *.swp
+
+# Ne pas ignorer certains répertoire
+!.gitkeep

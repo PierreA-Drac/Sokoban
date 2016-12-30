@@ -111,13 +111,12 @@ LEVEL editSokoban_Game(LEVEL L, ACTION A) {
 		L = handlingMovement(L, A);
 	else if (A.type == INIT)
 		L = reInitGame(L);
-	else if (A.type >= QUIT && A.type <= NEXT) {
-		if (A.type == NEXT)
-			L = nextLevel(L);
-		else if (A.type == PREV)
-			L = prevLevel(L);
+	else if (A.type == NEXT)
+		L = nextLevel(L);
+	else if (A.type == PREV)
+		L = prevLevel(L);
+	else if (A.type == QUIT)
 		L.quit = TRUE;
-	}
 	else if (A.type == UNDO)
 		L = undo(L);
 	else if (A.type == REDO)

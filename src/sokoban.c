@@ -21,10 +21,9 @@
  * 1. Fonctions du MAIN .......................................................:
  */
 
-SOKOBAN preInitStarting(SOKOBAN S, ACTION* A, int argc, char** argv) {
+SOKOBAN preInitStarting(SOKOBAN S, int argc, char** argv) {
 	S = checkArgs(argc, argv);
 	S.lev.quit = FALSE;
-	A->type = NONE; 
 	srand(time(NULL));
 	return S;
 }
@@ -43,11 +42,14 @@ SOKOBAN initSokoban(SOKOBAN S) {
 /* -------------------------------------------------------------------------- */
 
 SOKOBAN handlingGame(SOKOBAN S, ACTION* A) {
+	A->type = NONE;
 	while (S.lev.win != TRUE && S.lev.quit != TRUE) {
 		displaySokoban(S);
 		*A = waitAction(S.but, S.But_H_Pix, S.But_W_Pix, S.mode);
 		S.lev = editSokoban_Game(S.lev, *A);
 		S.lev.win = isWin(S.lev);
+                if (A->type != PREV || A->type != NEXT)
+                    break;
 	}
 	return S;
 }
@@ -93,7 +95,7 @@ int main (int argc, char** argv) {
 	ACTION A;
 
 	/* Pré-initialisation du Sokoban, du mode, de l'action et de rand */
-	S = preInitStarting(S, &A, argc, argv);
+	S = preInitStarting(S, argc, argv);
 
 	while (S.lev.quit != TRUE) {
 		/* Initialisation du Sokoban et de l'affichage */

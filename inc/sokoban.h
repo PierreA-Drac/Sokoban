@@ -4,7 +4,7 @@
  * # N° étudiant ..: 21501002
  *
  * Ce fichier contient la fonction main, appelant toutes les
- * fonctions nécéssaires aux grandes étapes de gestion du jeu.
+ * fonctions nécessaires aux grandes étapes de gestion du jeu.
  */
 
 #ifndef __SOKOBAN_H
@@ -19,20 +19,20 @@
 
 /** preInitStarting
  * =============================================================================
- * Organise la pré-initilisation du Sokoban S en récupérant les informations
- * depuis la ligne de commande, en initialisant l'action A, et la fonction rand
- * par le temps actuel pour la gestion de l'aléatoire.
+ * Organise la pré-initialisation du Sokoban S en récupérant les informations
+ * depuis la ligne de commande, et en initialisant la fonction rand par le temps
+ * actuel pour la gestion de l'aléatoire.
  * =============================================================================
  * Renvoie un Sokoban S prêt à être initialisé.
  */
 
-SOKOBAN preInitStarting(SOKOBAN S, ACTION* A, int argc, char** argv);
+SOKOBAN preInitStarting(SOKOBAN S, int argc, char** argv);
 
 /* -------------------------------------------------------------------------- */
 
 /** initSokoban
  * =============================================================================
- * Lance l'initisation du Sokoban S en fonction de si le mode est à jouer ou
+ * Lance l'initialisation du Sokoban S en fonction de si le mode est à jouer ou
  * éditeur, et initialise ensuite l'affichage.
  * =============================================================================
  * Renvoie le Sokoban S prêt à être afficher.
@@ -44,11 +44,11 @@ SOKOBAN initSokoban(SOKOBAN S);
 
 /** handlingGame
  * =============================================================================
- * Gère le déroulement d'une partie sur un niveau d'un Sokoban S en affichant
- * le Sokoban, en récupérant l'action de l'utilisateur et en modifiant le 
- * Sokoban en fonction de cette action. Test à chaque coup si l'utilisateur à
- * gagner la partie. Modifie par effet de bord l'action A pour le cas où l'on 
- * veut quitter.
+ * Gère le déroulement d'une partie sur un niveau d'un Sokoban S en initialisant
+ * l'action A, en affichant le Sokoban, en récupérant l'action de l'utilisateur
+ * et en modifiant le Sokoban en fonction de cette action. Test à chaque coup 
+ * si l'utilisateur à gagner la partie. Modifie par effet de bord l'action A 
+ * pour le cas où l'on veut quitter.
  * =============================================================================
  * Revnvoie le Sokoban S modifié par l'utilisateur.
  */

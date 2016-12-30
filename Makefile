@@ -12,6 +12,7 @@ EXEC = sokoban
 SRC_PATH = src/
 OBJ_PATH = obj/
 INC_PATH = inc/
+REPORT_PATH = report/
 SRC = $(shell find $(SRC_PATH)*.c)
 OBJ = $(SRC:$(SRC_PATH)%.c=$(OBJ_PATH)%.o)
 
@@ -50,6 +51,7 @@ clean :
 	rm -f $(EXEC)
 	rm -f $(OBJ)
 	rm -f .fuse_hidden*
+	make clean --directory="$(REPORT_PATH)"
 
 ## Debugger ...................................................................:
 
@@ -60,3 +62,8 @@ gdb : compil
 valgrind : compil
 	$(info Debbugage avec $@ :)
 	valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-possibly-lost=yes --show-reachable=yes --track-origins=yes --suppressions=SDL.supp ./$(EXEC) $(ARGS)
+
+## Rapport ....................................................................:
+
+report :
+	make --directory="$(REPORT_PATH)"

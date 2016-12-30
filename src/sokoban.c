@@ -48,7 +48,7 @@ SOKOBAN handlingGame(SOKOBAN S, ACTION* A) {
 		*A = waitAction(S.but, S.But_H_Pix, S.But_W_Pix, S.mode);
 		S.lev = editSokoban_Game(S.lev, *A);
 		S.lev.win = isWin(S.lev);
-                if (A->type != PREV || A->type != NEXT)
+                if (A->type == PREV || A->type == NEXT)
                     break;
 	}
 	return S;
